@@ -1,0 +1,66 @@
+import OurStory from "@/app/_components/about/OurStory";
+import OurTeam from "@/app/_components/about/OurTeam";
+import OurValue from "@/app/_components/about/OurValue";
+import OurVision from "@/app/_components/about/OurVision";
+import ReadyTo from "@/app/_components/home/ReadyTo";
+import HeadingSection from "@/app/shared/HeadingSection";
+import { Lightbulb, Target } from "lucide-react";
+import Wave from "react-wavify";
+
+const page = () => {
+  return (
+    <>
+      <HeadingSection textHeading="about ASPC" />
+      <Wave
+        fill="#1B2472"
+        paused={false}
+        style={{
+          display: "flex",
+          transform: "scaleY(-1)",
+          transformOrigin: "center",
+        }}
+        options={{
+          height: 100,
+          amplitude: 25,
+          speed: 0.15,
+          points: 3,
+        }}
+      />
+
+      {/* our vision component */}
+      <div className="flex items-center justify-center gap-5 container pb-20">
+        <OurVision
+          icon={<Target />}
+          heading="Our Vision"
+          className="bg-secondary-dark text-white"
+          description="To empower Arabian businesses with world-class software solutions, enabling digital transformation at every scale."
+        />
+        <OurVision
+          icon={<Lightbulb className="text-white" />}
+          heading="Our Vision"
+          className="border-secondary"
+          description="To be the most trusted software beacon across the Arab world — guiding companies to technology that truly works."
+        />
+      </div>
+
+      {/* our story */}
+      <OurStory />
+
+      {/* out team */}
+      <OurTeam />
+
+      {/* out value */}
+      <OurValue />
+
+      <ReadyTo
+        heading="Ready to Work With Us?"
+        paragraph="Let's build something great together. Reach out to discuss how we can help transform your business"
+        btnTextOne="Contact Us"
+        btnTextTwo="Join Our Team"
+        className="py-20"
+      />
+    </>
+  );
+};
+
+export default page;
