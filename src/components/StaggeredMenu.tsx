@@ -3,6 +3,7 @@ import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
+import Link from "next/link";
 
 export interface StaggeredMenuItem {
   label: string;
@@ -499,7 +500,8 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
           className="staggered-menu-header absolute top-0 left-0 w-full flex items-center justify-between p-[2em] bg-transparent pointer-events-none z-20"
           aria-label="Main navigation header"
         >
-          <div
+          <Link
+            href={"/"}
             className="sm-logo flex items-center select-none pointer-events-auto"
             aria-label="Logo"
           >
@@ -513,7 +515,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
               width={110}
               height={24}
             />
-          </div>
+          </Link>
 
           <button
             ref={toggleBtnRef}
@@ -530,7 +532,9 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
               <X className="h-6 w-6" aria-hidden="true" />
             ) : (
               <Menu
-                className={`h-6 w-6 ${open || scrolled ? "text-black" : "text-[#e9e9ef]"}`}
+                className={`h-6 w-6 ${
+                  open || scrolled ? "text-black" : "text-[#e9e9ef]"
+                }`}
                 aria-hidden="true"
               />
             )}
