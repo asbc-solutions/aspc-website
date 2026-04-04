@@ -2,7 +2,7 @@ import CountUp from "@/components/CountUp";
 
 const Statistics = () => {
   return (
-    <div className="grid grid-cols-2 gap-8 px-4 py-12 text-center sm:gap-10 sm:px-6 md:py-16 lg:grid-cols-4 lg:gap-6 lg:px-8 lg:py-20">
+    <div className="grid grid-cols-2 gap-8 px-4 py-12 text-center sm:gap-10 sm:px-6 md:py-16 lg:grid-cols-4 lg:gap-6 lg:px-8 lg:py-20 dark:bg-gra ">
       <div className="flex flex-col items-center">
         {/* <h1 className="text-5xl text-primary font-bold text-center">200+</h1> */}
         <div className="inline-flex items-center">

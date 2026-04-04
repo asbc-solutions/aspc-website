@@ -34,7 +34,7 @@ const Header = () => {
           />
         </Link>
         <nav>
-          <ul className="flex gap-5 text-white">
+          <ul className="flex gap-5 text-white dark:text-indigo-300">
             {navItems.slice(0, -1).map((item) => (
               <li key={item.href} className="list-none">
                 <Link prefetch={true} href={item.href}>
@@ -50,7 +50,7 @@ const Header = () => {
           <Link
             prefetch={true}
             href={"/contact-us"}
-            className="bg-white text-primary font-medium  rounded-full capitalize px-4 py-2"
+            className="bg-white dark:bg-black/10 dark:text-white dark:border-white/25 dark:border text-primary font-medium  rounded-full capitalize px-4 py-2"
           >
             contact
           </Link>
