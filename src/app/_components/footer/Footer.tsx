@@ -54,7 +54,7 @@ const Footer = () => {
             />
             <p className="max-w-sm text-sm leading-6">
               Empowering businesses across the Arab world with innovative
-              software solutions and enterprise- grade technology.
+              software solutions and enterprise-grade technology.
             </p>
             <p>Arabian Solution Beacon</p>
             <div className="flex items-center gap-4">

@@ -31,7 +31,7 @@ const page = () => {
       <div className="flex items-center justify-center gap-5 container pb-20">
         <OurVision
           icon={<Target />}
-          heading="Our Vision"
+          heading="Our mission"
           className="bg-secondary-dark text-white"
           description="To empower Arabian businesses with world-class software solutions, enabling digital transformation at every scale."
         />

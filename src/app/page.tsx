@@ -19,7 +19,7 @@ export default function Home() {
       <Partners />
       <ReadyTo
         heading="Ready to Build Something Great?"
-        paragraph="  Let's discuss how ASPC can transform your business with innovativ
+        paragraph="  Let's discuss how ASPC can transform your business with innovative
         software solutions tailored to your needs."
         btnTextOne="Start Your Project "
         btnTextTwo="Schedule a Call"

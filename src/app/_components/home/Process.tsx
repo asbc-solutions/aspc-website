@@ -12,7 +12,7 @@ const Process = () => {
       icon: <Search className="text-primary" />,
       title: "Discovery",
       description:
-        "We dive deep into understanding you business needs, challenges, and objectives.",
+        "We dive deep into understanding your business needs, challenges, and objectives.",
     },
     {
       icon: <Lightbulb className="text-primary" />,

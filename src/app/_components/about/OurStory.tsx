@@ -33,43 +33,47 @@ const timelineData = [
 
 const OurStory = () => {
   return (
-    <div className="container py-20 mx-auto bg-main flex flex-col items-center justify-center gap-10">
+    <div className="container py-12 md:py-20 mx-auto bg-main flex flex-col items-center justify-center gap-8 md:gap-10 px-4">
       <div className="flex flex-col items-center justify-center gap-3 text-center">
         <p className="uppercase text-primary text-xs font-bold">Our Journey</p>
-        <h1 className="text-4xl font-bold max-w-2xl">Our Story</h1>
+        <h1 className="text-2xl md:text-4xl font-bold max-w-2xl">Our Story</h1>
       </div>
 
       {/* timeline with vertical progress bar */}
-      <div className="flex gap-8 items-stretch max-w-3xl w-full">
+      <div className="flex gap-4 md:gap-8 items-stretch max-w-4xl w-full">
         {/* vertical progress bar with dots */}
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center shrink-0">
           {timelineData.map((item, index) => (
             <div
               key={index}
-              className="flex flex-col items-center flex-1 min-h-32"
+              className="flex flex-col items-center flex-1 min-h-20 md:min-h-32"
             >
               {/* dot */}
-              <div className="w-4 h-4 rounded-full bg-primary border-4 border-white shadow-md"></div>
+              <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-primary border-2 md:border-4 border-white shadow-md flex-shrink-0"></div>
               {/* connecting line */}
               {index < timelineData.length && (
-                <div className="w-1 flex-1 bg-linear-to-b from-primary to-primary opacity-30"></div>
+                <div className="w-0.5 md:w-1 flex-1 bg-primary opacity-30"></div>
               )}
             </div>
           ))}
         </div>
 
         {/* timeline cards */}
-        <div className="flex flex-col gap-8 w-full">
+        <div className="flex flex-col gap-4 md:gap-8 w-full">
           {timelineData.map((item, index) => (
             <div
               key={index}
-              className="flex flex-col gap-3 items-start justify-start bg-white p-8 rounded-lg w-3xl hover:shadow-lg transition-shadow duration-300"
+              className="flex flex-col gap-2 md:gap-3 items-start justify-start bg-white p-4 md:p-8 rounded-lg hover:shadow-lg transition-shadow duration-300"
             >
-              <h1 className="text-primary text-3xl font-bold">{item.year}</h1>
-              <h2 className="text-xl capitalize text-primary-dark font-bold">
+              <h1 className="text-primary text-2xl md:text-3xl font-bold">
+                {item.year}
+              </h1>
+              <h2 className="text-base md:text-xl capitalize text-primary-dark font-bold">
                 {item.title}
               </h2>
-              <p className="text-secondary text-sm">{item.description}</p>
+              <p className="text-secondary text-xs md:text-sm leading-relaxed">
+                {item.description}
+              </p>
             </div>
           ))}
         </div>
