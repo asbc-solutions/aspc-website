@@ -51,6 +51,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   onMenuClose,
 }: StaggeredMenuProps) => {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const openRef = useRef(false);
 
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -114,6 +115,15 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     });
     return () => ctx.revert();
   }, [menuButtonColor, position]);
+
+  useLayoutEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const buildOpenTimeline = useCallback(() => {
     const panel = panelRef.current;
@@ -496,7 +506,9 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
             <Image
               src={logoUrl || "/src/assets/logos/reactbits-gh-white.svg"}
               alt="Logo"
-              className="sm-logo-img block h-8 w-auto object-contain"
+              className={`sm-logo-img block h-8 w-auto object-contain transition-filter duration-300 ${
+                scrolled ? "brightness-0" : ""
+              }`}
               draggable={false}
               width={110}
               height={24}
@@ -505,8 +517,8 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 
           <button
             ref={toggleBtnRef}
-            className={`sm-toggle relative inline-flex items-center gap-[0.3rem] bg-transparent border-0 cursor-pointer font-medium leading-none overflow-visible pointer-events-auto ${
-              open ? "text-black" : "text-[#e9e9ef]"
+            className={`sm-toggle relative inline-flex items-center gap-[0.3rem] bg-transparent border-0 cursor-pointer font-medium leading-none overflow-visible pointer-events-auto transition-colors duration-300 ${
+              open || scrolled ? "text-black" : "text-[#e9e9ef]"
             }`}
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
@@ -517,7 +529,10 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
             {open ? (
               <X className="h-6 w-6" aria-hidden="true" />
             ) : (
-              <Menu className="h-6 w-6" aria-hidden="true" />
+              <Menu
+                className={`h-6 w-6 ${open || scrolled ? "text-black" : "text-[#e9e9ef]"}`}
+                aria-hidden="true"
+              />
             )}
           </button>
         </header>
@@ -600,7 +615,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 
       <style>{`
 .sm-scope .staggered-menu-wrapper { position: relative; width: 100%; height: 100%; z-index: 40; pointer-events: none; }
-.sm-scope .staggered-menu-header { position: absolute; top: 0; left: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 2em; background: transparent; pointer-events: none; z-index: 20; }
+.sm-scope .staggered-menu-header { position: absolute; top: 0; left: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 2em; background: transparent; pointer-events: none; z-index: 20; backdrop-filter:blur(10px);  }
 .sm-scope .staggered-menu-header > * { pointer-events: auto; }
 .sm-scope .sm-logo { display: flex; align-items: center; user-select: none; }
 .sm-scope .sm-logo-img { display: block; height: 32px; width: auto; object-fit: contain; }
