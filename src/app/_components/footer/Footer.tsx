@@ -29,8 +29,16 @@ const serviceLinks = [
 ];
 
 const socialLinks = [
-  { label: "LinkedIn", href: "#", icon: Linkedin },
-  { label: "Facebook", href: "#", icon: Facebook },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/company/arabian-solutions-beacon/",
+    icon: Linkedin,
+  },
+  {
+    label: "Facebook",
+    href: "https://www.facebook.com/share/17ntrEZPV7/",
+    icon: Facebook,
+  },
   { label: "Instagram", href: "#", icon: Instagram },
 ];
 
@@ -66,6 +74,7 @@ const Footer = () => {
                     key={social.label}
                     href={social.href}
                     aria-label={social.label}
+                    target="_blank"
                     className="transition-colors hover:text-white bg-white/20 rounded-full p-2"
                   >
                     <Icon size={18} />
