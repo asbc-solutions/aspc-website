@@ -96,25 +96,31 @@ const ReusableService = () => {
         <div
           key={index}
           className={`flex w-full items-center justify-around gap-10 flex-col py-20 px-5 ${
-            index % 2 !== 0 ? "lg:flex-row-reverse bg-main" : "lg:flex-row"
+            index % 2 !== 0
+              ? "lg:flex-row-reverse bg-main dark:bg-slate-900"
+              : "lg:flex-row"
           }`}
         >
-          <div className="relative shadow-xl shadow-[#1B2472]/20 rounded-lg p-10 flex items-center gap-5">
-            <span className="absolute top-2 left-2 w-2 h-2 rounded-full bg-[#AAC8E3]" />
-            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#1B2472]" />
-            <span className="absolute bottom-2 left-2 w-2 h-2 rounded-full bg-[#1B2472]" />
-            <span className="absolute bottom-2 right-2 w-2 h-2 rounded-full bg-[#AAC8E3]" />
-            <div className="bg-linear-to-br from-[#1B2472] to-[#4A6FFF] p-2 rounded-xl">
+          <div className="relative shadow-xl shadow-[#1B2472]/20 dark:shadow-blue-900/30 rounded-lg p-10 flex items-center gap-5 bg-white dark:bg-slate-800">
+            <span className="absolute top-2 left-2 w-2 h-2 rounded-full bg-[#AAC8E3] dark:bg-blue-400" />
+            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#1B2472] dark:bg-blue-600" />
+            <span className="absolute bottom-2 left-2 w-2 h-2 rounded-full bg-[#1B2472] dark:bg-blue-600" />
+            <span className="absolute bottom-2 right-2 w-2 h-2 rounded-full bg-[#AAC8E3] dark:bg-blue-400" />
+            <div className="bg-linear-to-br from-[#1B2472] dark:from-blue-700 to-[#4A6FFF] dark:to-blue-500 p-2 rounded-xl">
               {service.icon}
             </div>
           </div>
 
           <div className="flex flex-col items-start justify-center gap-5">
-            <span className="rounded-full px-2 bg-primary/20 text-sm text-primary font-semibold">
+            <span className="rounded-full px-2 bg-primary/20 dark:bg-blue-900/40 text-sm text-primary dark:text-blue-300 font-semibold">
               0{index + 1}
             </span>
-            <h1 className="text-3xl font-bold">{service.heading}</h1>
-            <p className="max-w-lg text-primary/70">{service.description}</p>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+              {service.heading}
+            </h1>
+            <p className="max-w-lg text-primary/70 dark:text-slate-400">
+              {service.description}
+            </p>
             <div>
               <div className="flex flex-col items-start gap-2">
                 {service.serviceArr.map((service, i) => (
@@ -125,15 +131,17 @@ const ReusableService = () => {
                     <CircleCheck
                       size={32}
                       strokeWidth={1}
-                      className="fill-primary text-white"
+                      className="fill-primary dark:fill-blue-500 text-white dark:text-white"
                     />
-                    <p>{service}</p>
+                    <p className="text-slate-700 dark:text-slate-200">
+                      {service}
+                    </p>
                   </div>
                 ))}
               </div>
             </div>
 
-            <Button className="rounded-full py-5">
+            <Button className="rounded-full py-5 dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700">
               Get a Quote <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           </div>

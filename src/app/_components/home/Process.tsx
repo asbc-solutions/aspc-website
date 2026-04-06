@@ -43,12 +43,14 @@ const Process = () => {
   return (
     <div className="container mx-auto py-20">
       <div className="flex flex-col items-center justify-center gap-3 text-center">
-        <p className="uppercase text-primary text-xs font-bold">Our Process</p>
-        <h1 className="text-4xl font-bold max-w-2xl ">
+        <p className="uppercase text-primary dark:text-blue-400 text-xs font-bold">
+          Our Process
+        </p>
+        <h1 className="text-4xl font-bold max-w-2xl dark:text-white">
           How We Bring Your Vision to Life
         </h1>
 
-        <p className="text-primary/50 max-w-2xl">
+        <p className="text-primary/50 dark:text-slate-400 max-w-2xl">
           A proven methodology that ensures quality, transparency, and
           successful outcomes every time.
         </p>
@@ -60,15 +62,17 @@ const Process = () => {
             className="flex flex-col items-center justify-center gap-2 mt-10"
           >
             <div className="relative w-max">
-              <div className="border-2 border-primary/50 rounded-full p-3">
+              <div className="border-2 border-primary/50 dark:border-blue-500/50 rounded-full p-3">
                 {step.icon}
               </div>
-              <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold">
+              <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary dark:bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
                 {index + 1}
               </div>
             </div>
-            <h1 className="text-xl font-semibold">{step.title}</h1>
-            <p className="text-primary/50 text-sm text-center line-clamp-3">
+            <h1 className="text-xl font-semibold dark:text-white">
+              {step.title}
+            </h1>
+            <p className="text-primary/50 dark:text-slate-400 text-sm text-center line-clamp-3">
               {step.description}
             </p>
           </div>

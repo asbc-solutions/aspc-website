@@ -80,7 +80,7 @@ const PortfolioCard = ({ data = portfolioData }: PortfolioCardProps) => {
       {data.map((item) => (
         <div
           key={item.id}
-          className="group flex flex-col items-start h-full bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden hover:-translate-y-1"
+          className="group flex flex-col items-start h-full bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden hover:-translate-y-1"
         >
           {/* Image Container */}
           <div className="relative w-full h-48 sm:h-40 overflow-hidden rounded-t-2xl flex items-center justify-center bg-linear-to-br from-gray-200 to-gray-300">
@@ -90,7 +90,7 @@ const PortfolioCard = ({ data = portfolioData }: PortfolioCardProps) => {
               alt={item.title}
             />
             {/* Overlay */}
-            <div className="absolute inset-0 bg-primary/40 group-hover:bg-primary/50 transition-colors rounded-t-2xl flex flex-col justify-between p-3 sm:p-4">
+            <div className="absolute inset-0 bg-primary/40 group-hover:bg-primary/50 transition-colors rounded-t-2xl flex flex-col justify-between p-3 sm:p-4 dark:bg-blue-600/40 dark:group-hover:bg-blue-600/50">
               <span className="bg-primary text-white px-3 py-1 rounded-lg text-xs sm:text-sm font-semibold w-fit shadow-md">
                 {item.badge}
               </span>

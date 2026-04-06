@@ -28,17 +28,17 @@ const page = () => {
       />
 
       {/* our vision component */}
-      <div className="flex items-center justify-center gap-5 container pb-20">
+      <div className="flex items-center justify-center gap-5 container pb-20 flex-col lg:flex-row">
         <OurVision
           icon={<Target />}
           heading="Our mission"
-          className="bg-secondary-dark text-white"
+          className="bg-secondary-dark dark:bg-slate-800 text-white dark:text-slate-100 dark:border-slate-700"
           description="To empower Arabian businesses with world-class software solutions, enabling digital transformation at every scale."
         />
         <OurVision
           icon={<Lightbulb className="text-white" />}
           heading="Our Vision"
-          className="border-secondary"
+          className="border-secondary dark:border-slate-700 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
           description="To be the most trusted software beacon across the Arab world — guiding companies to technology that truly works."
         />
       </div>

@@ -21,13 +21,13 @@ const ContactUs = () => {
     <>
       <HeadingSection textHeading="contact us" />
 
-      <div className="bg-main px-4 py-10 sm:px-6 lg:px-8 lg:py-20">
+      <div className="bg-main dark:bg-slate-950 px-4 py-10 sm:px-6 lg:px-8 lg:py-20">
         <div className="mx-auto flex w-full max-w-7xl flex-col items-stretch gap-6 lg:flex-row lg:gap-10">
           <div className="w-full lg:flex-1">
             <ContactForm />
           </div>
           <div
-            className="w-full self-stretch rounded-xl p-6 text-secondary shadow-lg sm:p-8 lg:max-w-md xl:max-w-lg"
+            className="w-full self-stretch rounded-xl p-6 text-secondary dark:text-slate-200 shadow-lg dark:bg-slate-800/50 sm:p-8 lg:max-w-md xl:max-w-lg"
             style={{
               background:
                 "linear-gradient(0deg, var(--color-blue-28, #1B2472), var(--color-blue-28, #1B2472)), radial-gradient(70.71% 70.71% at 50% 50%, rgba(170, 200, 227, 0.3) 3.54%, rgba(170, 200, 227, 0) 3.54%)",

@@ -96,12 +96,12 @@ export function ContactForm() {
   }
 
   return (
-    <Card className="w-full border-primary/10 shadow-[0_10px_40px_-20px_rgba(12,64,159,0.35)] sm:max-w-3xl">
+    <Card className="w-full border-primary/10 dark:border-blue-500/20 shadow-[0_10px_40px_-20px_rgba(12,64,159,0.35)] dark:shadow-[0_10px_40px_-20px_rgba(59,130,246,0.15)] dark:bg-slate-800 sm:max-w-3xl">
       <CardHeader className="space-y-1 pb-4">
-        <CardTitle className="text-2xl font-bold text-[#0D1240] sm:text-3xl">
+        <CardTitle className="text-2xl font-bold text-[#0D1240] dark:text-white sm:text-3xl">
           Let&apos;s Start Something Great
         </CardTitle>
-        <CardDescription className="text-base text-slate-600">
+        <CardDescription className="text-base text-slate-600 dark:text-slate-400">
           Tell us about your project and we&apos;ll get back within 24 hours
         </CardDescription>
       </CardHeader>
