@@ -62,26 +62,28 @@ const OurValue = () => {
   ];
 
   return (
-    <div className="container bg-main py-20 mx-auto flex flex-col items-center justify-center gap-10">
+    <div className="container bg-main dark:bg-slate-950 py-20 mx-auto flex flex-col items-center justify-center gap-10">
       <div className="flex flex-col items-center justify-center gap-3 text-center">
-        <p className="uppercase text-primary text-xs font-bold">
+        <p className="uppercase text-primary dark:text-blue-400 text-xs font-bold">
           What We Stand For
         </p>
-        <h1 className="text-4xl font-bold max-w-2xl">Our Values</h1>
+        <h1 className="text-4xl font-bold max-w-2xl dark:text-white">
+          Our Values
+        </h1>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
         {values.map((value) => (
           <div
             key={value.id}
-            className={`${value.color} ${value.borderColor} border-2 rounded-xl p-6 flex flex-col items-start justify-start gap-4 hover:shadow-lg transition-shadow duration-300`}
+            className={`${value.color} dark:bg-slate-800 ${value.borderColor} dark:border-slate-700 border-2 rounded-xl p-6 flex flex-col items-start justify-start gap-4 hover:shadow-lg transition-shadow duration-300`}
           >
-            <div className="text-primary">{value.icon}</div>
+            <div className="text-primary dark:text-blue-400">{value.icon}</div>
             <div className="flex flex-col gap-2">
-              <h3 className="text-xl font-bold text-primary-dark">
+              <h3 className="text-xl font-bold text-primary-dark dark:text-white">
                 {value.title}
               </h3>
-              <p className="text-secondary text-sm leading-relaxed">
+              <p className="text-secondary dark:text-slate-300 text-sm leading-relaxed">
                 {value.description}
               </p>
             </div>

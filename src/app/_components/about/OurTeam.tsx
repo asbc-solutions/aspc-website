@@ -16,17 +16,19 @@ const OurTeam = () => {
   return (
     <div className="container py-20 mx-auto flex flex-col items-center justify-center gap-10">
       <div className="flex flex-col items-center justify-center gap-3 text-center">
-        <p className="uppercase text-primary text-xs font-bold">
+        <p className="uppercase text-primary dark:text-blue-400 text-xs font-bold">
           The People Behind ASPC
         </p>
-        <h1 className="text-4xl font-bold max-w-2xl">Our team</h1>
+        <h1 className="text-4xl font-bold max-w-2xl dark:text-white">
+          Our team
+        </h1>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 w-full items-center">
         {teamMembers.map((member) => (
           <div
             key={member.id}
-            className="flex flex-col items-center justify-center gap-3 p-6 rounded-lg"
+            className="flex flex-col items-center justify-center gap-3 p-6 rounded-lg dark:bg-slate-800"
           >
             <Image
               src={imgMan}
@@ -34,8 +36,12 @@ const OurTeam = () => {
               priority={false}
               className="w-24 h-24 rounded-full grayscale hover:grayscale-0 transition-all duration-300 object-cover"
             />
-            <h1 className="font-bold text-lg text-center">{member.name}</h1>
-            <p className="text-secondary text-center text-sm">{member.role}</p>
+            <h1 className="font-bold text-lg text-center dark:text-white">
+              {member.name}
+            </h1>
+            <p className="text-secondary dark:text-slate-400 text-center text-sm">
+              {member.role}
+            </p>
           </div>
         ))}
       </div>

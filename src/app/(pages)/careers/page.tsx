@@ -119,10 +119,12 @@ const page = () => {
       />
 
       <div className="flex flex-col items-center justify-center gap-3 text-center py-10">
-        <p className="uppercase text-primary text-xs font-bold">
+        <p className="uppercase text-primary dark:text-blue-400 text-xs font-bold">
           Why Work With Us
         </p>
-        <h1 className="text-3xl font-bold max-w-3xl">Our Culture</h1>
+        <h1 className="text-3xl font-bold max-w-3xl dark:text-white">
+          Our Culture
+        </h1>
       </div>
 
       <div className="px-4 py-12">
@@ -140,13 +142,13 @@ const page = () => {
 
       <div className="container mx-auto flex flex-col items-center justify-center gap-2">
         <div className="flex flex-col items-center justify-center gap-3 text-center py-10">
-          <h1 className="text-3xl font-bold max-w-3xl flex items-center gap-3">
+          <h1 className="text-3xl font-bold max-w-3xl dark:text-white flex items-center gap-3">
             Open Positions
-            <span className="py-2 px-4 text-sm border bg-primary rounded-lg text-white flex justify-center items-center">
+            <span className="py-2 px-4 text-sm border bg-primary dark:bg-blue-600 rounded-lg text-white dark:text-slate-100 flex justify-center items-center">
               10
             </span>
           </h1>
-          <p className="uppercase text-primary text-xs font-bold">
+          <p className="uppercase text-primary dark:text-blue-400 text-xs font-bold">
             Find your next career opportunity with ASPC
           </p>
         </div>

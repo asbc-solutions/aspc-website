@@ -42,17 +42,17 @@ const services = [
 
 const Serviece = () => {
   return (
-    <div className="bg-main flex items-center justify-center gap-10 py-20 flex-col">
+    <div className="bg-main dark:bg-slate-950 flex items-center justify-center gap-10 py-20 flex-col">
       <div className="container mx-auto">
         <div className="flex flex-col items-center justify-center gap-3 text-center">
-          <p className="uppercase text-primary text-xs font-bold">
+          <p className="uppercase text-primary dark:text-blue-400 text-xs font-bold">
             our services
           </p>
-          <h1 className="text-4xl font-bold max-w-2xl ">
+          <h1 className="text-4xl font-bold max-w-2xl dark:text-white">
             Comprehensive IT Solutions for Your Business
           </h1>
 
-          <p className="text-primary/50 max-w-2xl">
+          <p className="text-primary/50 dark:text-slate-400 max-w-2xl">
             From concept to deployment, we deliver end-to-end technology
             solutions tha drive growth and innovation.
           </p>

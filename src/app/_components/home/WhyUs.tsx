@@ -29,17 +29,17 @@ const processSteps = [
 
 const WhyUs = () => {
   return (
-    <div className=" py-20 bg-[#1B2472]">
+    <div className=" py-20 bg-[#1B2472] dark:bg-slate-950">
       <div className="container mx-auto ">
         <div className="flex flex-col items-center justify-center gap-3 text-center">
-          <p className="uppercase text-secondary text-xs font-bold">
+          <p className="uppercase text-secondary dark:text-blue-300 text-xs font-bold">
             Why Choose ASPC
           </p>
-          <h1 className="text-4xl text-white font-bold max-w-2xl ">
+          <h1 className="text-4xl text-white dark:text-slate-50 font-bold max-w-2xl ">
             What Sets Us Apart
           </h1>
 
-          <p className="text-secondary max-w-2xl">
+          <p className="text-secondary dark:text-slate-300 max-w-2xl">
             We combine global expertise with local insight to deliver solutions
             that truly matter.
           </p>
@@ -49,15 +49,17 @@ const WhyUs = () => {
           {processSteps.map((step, index) => (
             <div
               key={index}
-              className="flex flex-col items-start p-6 bg-[#2A3A8A] rounded-lg"
+              className="flex flex-col items-start p-6 bg-[#2A3A8A] dark:bg-slate-800 rounded-lg"
             >
-              <div className="bg-linear-to-br from-[#2845B5] to-[#4A6FFF] p-2 rounded-xl mb-4">
+              <div className="bg-linear-to-br from-[#2845B5] dark:from-blue-700 to-[#4A6FFF] dark:to-blue-500 p-2 rounded-xl mb-4">
                 {step.icon}
               </div>
-              <h2 className="text-xl text-white font-bold mb-2">
+              <h2 className="text-xl text-white dark:text-slate-50 font-bold mb-2">
                 {step.title}
               </h2>
-              <p className="text-secondary">{step.description}</p>
+              <p className="text-secondary dark:text-slate-300">
+                {step.description}
+              </p>
             </div>
           ))}
         </div>

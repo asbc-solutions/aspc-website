@@ -34,15 +34,15 @@ const page = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row items-stretch justify-center">
           {/* Content Section */}
-          <div className="bg-secondary-dark text-white p-6 sm:p-8 lg:p-10 flex flex-col items-start justify-center gap-4 flex-1">
+          <div className="bg-secondary-dark dark:bg-slate-900 text-white dark:text-slate-200 p-6 sm:p-8 lg:p-10 flex flex-col items-start justify-center gap-4 flex-1">
             {/* badge */}
-            <span className="bg-primary text-white px-4 py-2 rounded-full text-xs sm:text-sm font-semibold">
+            <span className="bg-primary dark:bg-blue-600 text-white dark:text-slate-100 px-4 py-2 rounded-full text-xs sm:text-sm font-semibold">
               Featured Project
             </span>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl max-w-3xl font-bold leading-tight">
               Al-Rashid Retail ERP Transformation
             </h1>
-            <span className="bg-secondary/20 capitalize text-secondary px-3 py-1 rounded-full w-fit text-xs sm:text-sm font-medium">
+            <span className="bg-secondary/20 dark:bg-blue-900/40 capitalize text-secondary dark:text-blue-300 px-3 py-1 rounded-full w-fit text-xs sm:text-sm font-medium">
               retail
             </span>
 
@@ -57,10 +57,10 @@ const page = () => {
                 </p>
               </div>
               <div>
-                <p className="uppercase text-secondary text-xs sm:text-sm font-semibold tracking-wide">
+                <p className="uppercase text-secondary dark:text-blue-300 text-xs sm:text-sm font-semibold tracking-wide">
                   Solution
                 </p>
-                <p className="text-sm sm:text-base text-gray-100">
+                <p className="text-sm sm:text-base text-gray-100 dark:text-slate-300">
                   Cloud-native ERP with real-time inventory
                 </p>
               </div>
@@ -68,7 +68,7 @@ const page = () => {
 
             {/* results */}
             <div className="flex flex-col gap-3 items-start justify-center w-full">
-              <p className="text-secondary text-xs sm:text-sm font-semibold uppercase tracking-wide">
+              <p className="text-secondary dark:text-blue-300 text-xs sm:text-sm font-semibold uppercase tracking-wide">
                 Results
               </p>
               {/* Responsive Results Grid */}
@@ -115,7 +115,7 @@ const page = () => {
               </div>
             </div>
 
-            <Button className="bg-white text-primary hover:bg-gray-100 rounded-full mt-2 text-sm sm:text-base font-semibold">
+            <Button className="bg-white dark:bg-blue-600 text-primary dark:text-white hover:bg-gray-100 dark:hover:bg-blue-700 rounded-full mt-2 text-sm sm:text-base font-semibold">
               Read Full Case Study <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </div>
@@ -131,8 +131,10 @@ const page = () => {
         </div>
       </div>
       <div className="flex flex-col items-center justify-center gap-3 text-center py-10">
-        <h1 className="text-3xl font-bold max-w-3xl">Case Studies</h1>
-        <p className="uppercase text-primary text-xs font-bold">
+        <h1 className="text-3xl font-bold max-w-3xl dark:text-white">
+          Case Studies
+        </h1>
+        <p className="uppercase text-primary dark:text-blue-400 text-xs font-bold">
           Explore our success stories across various industries
         </p>
       </div>
