@@ -2,14 +2,34 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
+  /* Light mode backgrounds */
   --background: #ffffff;
+  --main-color: #f5f7ff;
+
+  /* Light mode text */
   --foreground: #171717;
+  --text-1: #1f2937;
+  --text-2: #6b7280;
+  --text-3: #9ca3af;
+
+  /* Brand colors */
   --primary: #0c409f;
   --primary-dark: #0d1240;
   --secondary-dark: #1b2472;
   --secondary: #aac8e3;
-  --main-color: #f5f7ff;
   --primary-foreground: #ffffff;
+
+  /* Light mode card */
+  --bg-card: #f9fafb;
+  --border: rgba(0, 0, 0, 0.06);
+  --border-accent: rgba(12, 64, 159, 0.2);
+
+  /* Blue palette */
+  --blue-core: #0c409f;
+  --blue-bright: #2563eb;
+  --blue-light: #93c5fd;
+  --blue-glow: rgba(37, 99, 235, 0.1);
+  --cyan: #06b6d4;
 }
 
 @theme inline {
@@ -21,26 +41,94 @@
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-main: var(--main-color);
+  --color-bg-0: var(--bg-0);
+  --color-bg-1: var(--bg-1);
+  --color-bg-2: var(--bg-2);
+  --color-bg-card: var(--bg-card);
+  --color-border: var(--border);
+  --color-border-accent: var(--border-accent);
+  --color-blue-core: var(--blue-core);
+  --color-blue-bright: var(--blue-bright);
+  --color-blue-light: var(--blue-light);
+  --color-blue-glow: var(--blue-glow);
+  --color-cyan: var(--cyan);
+  --color-text-1: var(--text-1);
+  --color-text-2: var(--text-2);
+  --color-text-3: var(--text-3);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Dark mode backgrounds */
+    --background: #05080f;
+    --main-color: #1a1f35;
+
+    /* Dark mode text */
+    --foreground: #f1f5f9;
+    --text-1: #f1f5f9;
+    --text-2: #94a3b8;
+    --text-3: #4b5a72;
+
+    /* Brand colors - keep same for both modes */
     --primary: #0c409f;
     --primary-dark: #0d1240;
+    --secondary-dark: #1b2472;
+    --secondary: #aac8e3;
     --primary-foreground: #ffffff;
+
+    /* Dark mode backgrounds */
+    --bg-0: #05080f;
+    --bg-1: #090d18;
+    --bg-2: #0d1220;
+    --bg-card: #0f1628;
+
+    /* Dark mode borders */
+    --border: rgba(255, 255, 255, 0.06);
+    --border-accent: rgba(59, 130, 246, 0.3);
+
+    /* Blue palette */
+    --blue-core: #2563eb;
+    --blue-bright: #3b82f6;
+    --blue-light: #60a5fa;
+    --blue-glow: rgba(59, 130, 246, 0.15);
+    --cyan: #06b6d4;
   }
 }
 
 html.dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  /* Dark mode backgrounds */
+  --background: #05080f;
+  --main-color: #1a1f35;
+
+  /* Dark mode text */
+  --foreground: #f1f5f9;
+  --text-1: #f1f5f9;
+  --text-2: #94a3b8;
+  --text-3: #4b5a72;
+
+  /* Brand colors */
   --primary: #0c409f;
   --primary-dark: #0d1240;
   --primary-foreground: #ffffff;
+
+  /* Dark mode backgrounds */
+  --bg-0: #05080f;
+  --bg-1: #090d18;
+  --bg-2: #0d1220;
+  --bg-card: #0f1628;
+
+  /* Dark mode borders */
+  --border: rgba(255, 255, 255, 0.06);
+  --border-accent: rgba(59, 130, 246, 0.3);
+
+  /* Blue palette */
+  --blue-core: #2563eb;
+  --blue-bright: #3b82f6;
+  --blue-light: #60a5fa;
+  --blue-glow: rgba(59, 130, 246, 0.15);
+  --cyan: #06b6d4;
 }
 
 body {

@@ -2,7 +2,7 @@ import logo from "@/app/assets/logo.png";
 import StaggeredMenu from "@/components/StaggeredMenu";
 import Image from "next/image";
 import Link from "next/link";
-// import { ThemeToggle } from "../theme/ThemeToggle";
+import { ThemeToggle } from "../theme/ThemeToggle";
 
 const Header = () => {
   const navItems = [
@@ -46,7 +46,7 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center gap-4">
-          {/* <ThemeToggle /> */}
+          <ThemeToggle />
           <Link
             prefetch={true}
             href={"/contact-us"}
