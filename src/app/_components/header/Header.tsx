@@ -1,8 +1,8 @@
 import logo from "@/app/assets/logo.png";
 import Image from "next/image";
 import Link from "next/link";
-// import { ThemeToggle } from "../theme/ThemeToggle";
-import { SideMenu } from "../home/SideMenu";
+import { ThemeToggle } from "../theme/ThemeToggle";
+import { SideMenu } from "./SideMenu";
 
 const Header = () => {
   const navItems = [
@@ -34,7 +34,7 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center gap-4">
-          {/* <ThemeToggle /> */}
+          <ThemeToggle />
           <Link
             prefetch={true}
             href={"/contact-us"}

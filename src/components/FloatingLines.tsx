@@ -315,49 +315,12 @@ export default function FloatingLines({
 
     let active = true;
 
-    // Check if WebGL is available
-    let canUseWebGL = true;
-    try {
-      const canvas = document.createElement("canvas");
-      const gl =
-        canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-      if (!gl) {
-        canUseWebGL = false;
-      }
-    } catch (e) {
-      canUseWebGL = false;
-    }
-
-    // Fallback to gradient background if WebGL is not available
-    if (!canUseWebGL) {
-      const fallbackDiv = document.createElement("div");
-      fallbackDiv.style.width = "100%";
-      fallbackDiv.style.height = "100%";
-      fallbackDiv.style.background =
-        "linear-gradient(135deg, rgba(47, 75, 162, 0.3) 0%, rgba(233, 71, 245, 0.2) 100%)";
-      container.appendChild(fallbackDiv);
-      return;
-    }
-
     const scene = new Scene();
 
     const camera = new OrthographicCamera(-1, 1, 1, -1, 0, 1);
     camera.position.z = 1;
 
-    let renderer: WebGLRenderer;
-    try {
-      renderer = new WebGLRenderer({ antialias: true, alpha: false });
-    } catch (e) {
-      console.warn("WebGL renderer creation failed:", e);
-      const fallbackDiv = document.createElement("div");
-      fallbackDiv.style.width = "100%";
-      fallbackDiv.style.height = "100%";
-      fallbackDiv.style.background =
-        "linear-gradient(135deg, rgba(47, 75, 162, 0.3) 0%, rgba(233, 71, 245, 0.2) 100%)";
-      container.appendChild(fallbackDiv);
-      return;
-    }
-
+    const renderer = new WebGLRenderer({ antialias: true, alpha: false });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.domElement.style.width = "100%";
     renderer.domElement.style.height = "100%";

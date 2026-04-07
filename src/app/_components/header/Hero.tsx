@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 
 const Hero = () => {
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-red-300">
+    <div className="relative h-screen w-full overflow-hidden ">
       {/* <div className="absolute inset-0">
         <FloatingLines
           enabledWaves={["top", "bottom", "middle"]}
