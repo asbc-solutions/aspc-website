@@ -313,6 +313,13 @@ export default function FloatingLines({
     const container = containerRef.current;
     if (!container) return;
 
+    // Check WebGL support before attempting to create renderer
+    const testCanvas = document.createElement("canvas");
+    const gl =
+      testCanvas.getContext("webgl") ||
+      testCanvas.getContext("experimental-webgl");
+    if (!gl) return;
+
     let active = true;
 
     const scene = new Scene();
@@ -320,7 +327,12 @@ export default function FloatingLines({
     const camera = new OrthographicCamera(-1, 1, 1, -1, 0, 1);
     camera.position.z = 1;
 
-    const renderer = new WebGLRenderer({ antialias: true, alpha: false });
+    let renderer: WebGLRenderer;
+    try {
+      renderer = new WebGLRenderer({ antialias: true, alpha: false });
+    } catch {
+      return;
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.domElement.style.width = "100%";
     renderer.domElement.style.height = "100%";
@@ -497,11 +509,11 @@ export default function FloatingLines({
       if (ro) ro.disconnect();
 
       if (interactive) {
-        renderer.domElement.removeEventListener(
+        renderer!.domElement.removeEventListener(
           "pointermove",
           handlePointerMove,
         );
-        renderer.domElement.removeEventListener(
+        renderer!.domElement.removeEventListener(
           "pointerleave",
           handlePointerLeave,
         );
@@ -509,10 +521,10 @@ export default function FloatingLines({
 
       geometry.dispose();
       material.dispose();
-      renderer.dispose();
-      renderer.forceContextLoss();
-      if (renderer.domElement.parentElement) {
-        renderer.domElement.parentElement.removeChild(renderer.domElement);
+      renderer!.dispose();
+      renderer!.forceContextLoss();
+      if (renderer!.domElement.parentElement) {
+        renderer!.domElement.parentElement.removeChild(renderer!.domElement);
       }
     };
   }, [

@@ -1,10 +1,13 @@
 @import "tailwindcss";
-/* @custom-variant dark (&:where(.dark, .dark *)); */
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   /* Light mode backgrounds */
   --background: #ffffff;
   --main-color: #f5f7ff;
+  --bg-0: #ffffff;
+  --bg-1: #f5f7ff;
+  --bg-2: #eef2ff;
 
   /* Light mode text */
   --foreground: #171717;
@@ -12,8 +15,6 @@
   --text-2: #6b7280;
   --text-3: #9ca3af;
 
-
-  
   /* Brand colors */
   --primary: #0c409f;
   --primary-dark: #0d1240;
@@ -32,6 +33,40 @@
   --blue-light: #93c5fd;
   --blue-glow: rgba(37, 99, 235, 0.1);
   --cyan: #06b6d4;
+}
+
+.dark {
+  /* Dark mode backgrounds */
+  --background: #0a0a0a;
+  --main-color: #0d1117;
+  --bg-0: #0a0a0a;
+  --bg-1: #0d1117;
+  --bg-2: #161b22;
+
+  /* Dark mode text */
+  --foreground: #ededed;
+  --text-1: #f9fafb;
+  --text-2: #9ca3af;
+  --text-3: #6b7280;
+
+  /* Brand colors (unchanged) */
+  --primary: #3b82f6;
+  --primary-dark: #1e3a8a;
+  --secondary-dark: #1e40af;
+  --secondary: #93c5fd;
+  --primary-foreground: #ffffff;
+
+  /* Dark mode card */
+  --bg-card: #111827;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-accent: rgba(59, 130, 246, 0.3);
+
+  /* Blue palette */
+  --blue-core: #3b82f6;
+  --blue-bright: #60a5fa;
+  --blue-light: #bfdbfe;
+  --blue-glow: rgba(59, 130, 246, 0.15);
+  --cyan: #22d3ee;
 }
 
 @theme inline {
