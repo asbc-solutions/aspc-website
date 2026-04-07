@@ -10,7 +10,7 @@ import Wave from "react-wavify";
 const page = () => {
   return (
     <>
-      <HeadingSection textHeading="about ASPC" />
+      <HeadingSection textHeading="about ASBC" />
       <Wave
         fill="#1B2472"
         paused={false}
