@@ -4,8 +4,8 @@ import { ArrowRight } from "lucide-react";
 
 const Hero = () => {
   return (
-    <div className="relative h-screen w-full overflow-hidden">
-      <div className="absolute inset-0">
+    <div className="relative h-screen w-full overflow-hidden bg-red-300">
+      {/* <div className="absolute inset-0">
         <FloatingLines
           enabledWaves={["top", "bottom", "middle"]}
           // Array - specify line count per wave; Number - same count for all waves
@@ -18,7 +18,7 @@ const Hero = () => {
           parallax={true}
           mixBlendMode="normal"
         />
-      </div>
+      </div> */}
 
       <div className="relative">
         <div className="text-white flex min-h-screen flex-col items-center justify-center gap-4 px-4 pt-24 pb-10 text-center sm:gap-5 sm:px-6 sm:pt-28 lg:px-8">
