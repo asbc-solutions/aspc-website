@@ -572,7 +572,7 @@ export default function FloatingLines({
     bottomLineCount,
     topLineDistance,
     middleLineDistance,
-    bottomLineDistance
+    bottomLineDistance,
   ]);
 
   return (
