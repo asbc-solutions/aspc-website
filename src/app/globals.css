@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@custom-variant dark (&:where(.dark, .dark *));
+/* @custom-variant dark (&:where(.dark, .dark *)); */
 
 :root {
   /* Light mode backgrounds */
@@ -59,77 +59,6 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Dark mode backgrounds */
-    --background: #05080f;
-    --main-color: #1a1f35;
-
-    /* Dark mode text */
-    --foreground: #f1f5f9;
-    --text-1: #f1f5f9;
-    --text-2: #94a3b8;
-    --text-3: #4b5a72;
-
-    /* Brand colors - keep same for both modes */
-    --primary: #0c409f;
-    --primary-dark: #0d1240;
-    --secondary-dark: #1b2472;
-    --secondary: #aac8e3;
-    --primary-foreground: #ffffff;
-
-    /* Dark mode backgrounds */
-    --bg-0: #05080f;
-    --bg-1: #090d18;
-    --bg-2: #0d1220;
-    --bg-card: #0f1628;
-
-    /* Dark mode borders */
-    --border: rgba(255, 255, 255, 0.06);
-    --border-accent: rgba(59, 130, 246, 0.3);
-
-    /* Blue palette */
-    --blue-core: #2563eb;
-    --blue-bright: #3b82f6;
-    --blue-light: #60a5fa;
-    --blue-glow: rgba(59, 130, 246, 0.15);
-    --cyan: #06b6d4;
-  }
-}
-
-html.dark {
-  /* Dark mode backgrounds */
-  --background: #05080f;
-  --main-color: #1a1f35;
-
-  /* Dark mode text */
-  --foreground: #f1f5f9;
-  --text-1: #f1f5f9;
-  --text-2: #94a3b8;
-  --text-3: #4b5a72;
-
-  /* Brand colors */
-  --primary: #0c409f;
-  --primary-dark: #0d1240;
-  --primary-foreground: #ffffff;
-
-  /* Dark mode backgrounds */
-  --bg-0: #05080f;
-  --bg-1: #090d18;
-  --bg-2: #0d1220;
-  --bg-card: #0f1628;
-
-  /* Dark mode borders */
-  --border: rgba(255, 255, 255, 0.06);
-  --border-accent: rgba(59, 130, 246, 0.3);
-
-  /* Blue palette */
-  --blue-core: #2563eb;
-  --blue-bright: #3b82f6;
-  --blue-light: #60a5fa;
-  --blue-glow: rgba(59, 130, 246, 0.15);
-  --cyan: #06b6d4;
-}
 
 body {
   background: var(--background);
