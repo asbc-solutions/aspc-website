@@ -15,12 +15,6 @@ const Header = () => {
     { label: "Contact Us", href: "/contact-us" },
   ];
 
-  const mobileMenuItems = navItems.map((item) => ({
-    label: item.label,
-    ariaLabel: `Go to ${item.label}`,
-    link: item.href,
-  }));
-
   return (
     <>
       <div className="flex container mx-auto p-4 items-center justify-between bg-transparent absolute top-0 left-0 right-0">
