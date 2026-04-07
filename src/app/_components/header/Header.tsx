@@ -1,8 +1,8 @@
 import logo from "@/app/assets/logo.png";
-import StaggeredMenu from "@/components/StaggeredMenu";
 import Image from "next/image";
 import Link from "next/link";
 import { ThemeToggle } from "../theme/ThemeToggle";
+import { SideMenu } from "../home/SideMenu";
 
 const Header = () => {
   const navItems = [
@@ -23,7 +23,7 @@ const Header = () => {
 
   return (
     <>
-      <div className="hidden md:flex container mx-auto p-4 items-center justify-between bg-transparent absolute top-0 left-0 right-0">
+      <div className="flex container mx-auto p-4 items-center justify-between bg-transparent absolute top-0 left-0 right-0">
         <Link href={"/"}>
           <Image
             src={logo}
@@ -33,7 +33,7 @@ const Header = () => {
             quality={100}
           />
         </Link>
-        <nav>
+        <nav className="hidden md:block">
           <ul className="flex gap-5 text-white dark:text-indigo-300">
             {navItems.slice(0, -1).map((item) => (
               <li key={item.href} className="list-none">
@@ -50,24 +50,12 @@ const Header = () => {
           <Link
             prefetch={true}
             href={"/contact-us"}
-            className="bg-white dark:bg-black/10 dark:text-white dark:border-white/25 dark:border text-primary font-medium  rounded-full capitalize px-4 py-2"
+            className="hidden md:flex bg-white dark:bg-black/10 dark:text-white dark:border-white/25 dark:border text-primary font-medium  rounded-full capitalize px-4 py-2"
           >
             contact
           </Link>
+          <SideMenu />
         </div>
-      </div>
-
-      <div className="md:hidden absolute top-0 left-0 right-0 z-50">
-        <StaggeredMenu
-          isFixed
-          items={mobileMenuItems}
-          displaySocials={false}
-          logoUrl={logo.src}
-          colors={["#111827", "#1f2937"]}
-          menuButtonColor="#ffffff"
-          openMenuButtonColor="#111111"
-          accentColor="#5227FF"
-        />
       </div>
     </>
   );
