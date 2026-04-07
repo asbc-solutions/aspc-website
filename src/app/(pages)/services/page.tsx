@@ -1,4 +1,5 @@
 import ReadyTo from "@/app/_components/home/ReadyTo";
+import FadeInSection from "@/app/_components/animation/FadeInSection";
 import ReusableService from "@/app/_components/services/ReusableService";
 import HeadingSection from "@/app/shared/HeadingSection";
 import Wave from "react-wavify";
@@ -26,16 +27,20 @@ const page = () => {
         }}
       />
 
-      <ReusableService />
+      <FadeInSection>
+        <ReusableService />
+      </FadeInSection>
 
-      <ReadyTo
-        heading="Ready to Transform Your Business"
-        paragraph="Let's discuss how our services can help you achieve your goals. Contact us
-        today for a free consultation."
-        btnTextOne="Contact "
-        btnTextTwo="Explore Solutions"
-        className="py-20"
-      />
+      <FadeInSection>
+        <ReadyTo
+          heading="Ready to Transform Your Business"
+          paragraph="Let's discuss how our services can help you achieve your goals. Contact us
+          today for a free consultation."
+          btnTextOne="Contact "
+          btnTextTwo="Explore Solutions"
+          className="py-20"
+        />
+      </FadeInSection>
     </>
   );
 };

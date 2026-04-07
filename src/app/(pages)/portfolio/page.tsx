@@ -7,6 +7,7 @@ import portfolio from "@/app/assets/portfolio.jpeg";
 import Wave from "react-wavify";
 import PortfolioCard from "@/app/_components/portfolio/PortfolioCard";
 import ReadyTo from "@/app/_components/home/ReadyTo";
+import FadeInSection from "@/app/_components/animation/FadeInSection";
 
 const page = () => {
   return (
@@ -31,8 +32,9 @@ const page = () => {
         }}
       />
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row items-stretch justify-center">
+      <FadeInSection>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row items-stretch justify-center">
           {/* Content Section */}
           <div className="bg-secondary-dark dark:bg-slate-900 text-white dark:text-slate-200 p-6 sm:p-8 lg:p-10 flex flex-col items-start justify-center gap-4 flex-1">
             {/* badge */}
@@ -120,37 +122,44 @@ const page = () => {
             </Button>
           </div>
 
-          {/* Image Section */}
-          <div className="relative w-full lg:w-auto lg:flex-1 h-64 sm:h-80 lg:h-auto overflow-hidden">
-            <Image
-              src={portfolio}
-              alt="portfolio"
-              className="w-full h-full object-cover"
-            />
+            {/* Image Section */}
+            <div className="relative w-full lg:w-auto lg:flex-1 h-64 sm:h-80 lg:h-auto overflow-hidden">
+              <Image
+                src={portfolio}
+                alt="portfolio"
+                className="w-full h-full object-cover"
+              />
+            </div>
           </div>
         </div>
-      </div>
-      <div className="flex flex-col items-center justify-center gap-3 text-center py-10">
-        <h1 className="text-3xl font-bold max-w-3xl dark:text-white">
-          Case Studies
-        </h1>
-        <p className="uppercase text-primary dark:text-blue-400 text-xs font-bold">
-          Explore our success stories across various industries
-        </p>
-      </div>
-      <div className="container mx-auto px-4 md:px-8 pb-10">
-        {/* card */}
-        <PortfolioCard />
-      </div>
+      </FadeInSection>
+      <FadeInSection>
+        <div className="flex flex-col items-center justify-center gap-3 text-center py-10">
+          <h1 className="text-3xl font-bold max-w-3xl dark:text-white">
+            Case Studies
+          </h1>
+          <p className="uppercase text-primary dark:text-blue-400 text-xs font-bold">
+            Explore our success stories across various industries
+          </p>
+        </div>
+      </FadeInSection>
+      <FadeInSection>
+        <div className="container mx-auto px-4 md:px-8 pb-10">
+          {/* card */}
+          <PortfolioCard />
+        </div>
+      </FadeInSection>
 
-      <ReadyTo
-        heading="Have a Project in Mind?"
-        paragraph="Let's discuss how we can help you achieve your goals. Contact us today for a
-        free consultation."
-        btnTextOne="Start Your Project "
-        btnTextTwo="Explore Our Services"
-        className="py-20"
-      />
+      <FadeInSection>
+        <ReadyTo
+          heading="Have a Project in Mind?"
+          paragraph="Let's discuss how we can help you achieve your goals. Contact us today for a
+          free consultation."
+          btnTextOne="Start Your Project "
+          btnTextTwo="Explore Our Services"
+          className="py-20"
+        />
+      </FadeInSection>
     </>
   );
 };

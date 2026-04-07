@@ -4,6 +4,7 @@ import JobCard from "@/app/_components/careers/JobCard";
 import { Rocket, Users, BookOpen } from "lucide-react";
 import Wave from "react-wavify";
 import ReadyTo from "@/app/_components/home/ReadyTo";
+import FadeInSection from "@/app/_components/animation/FadeInSection";
 
 const cultureData = [
   {
@@ -118,63 +119,71 @@ const page = () => {
         }}
       />
 
-      <div className="flex flex-col items-center justify-center gap-3 text-center py-10">
-        <p className="uppercase text-primary dark:text-blue-400 text-xs font-bold">
-          Why Work With Us
-        </p>
-        <h1 className="text-3xl font-bold max-w-3xl dark:text-white">
-          Our Culture
-        </h1>
-      </div>
-
-      <div className="px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {cultureData.map((item) => (
-            <CultureCard
-              key={item.id}
-              icon={item.icon}
-              title={item.title}
-              description={item.description}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="container mx-auto flex flex-col items-center justify-center gap-2">
+      <FadeInSection>
         <div className="flex flex-col items-center justify-center gap-3 text-center py-10">
-          <h1 className="text-3xl font-bold max-w-3xl dark:text-white flex items-center gap-3">
-            Open Positions
-            <span className="py-2 px-4 text-sm border bg-primary dark:bg-blue-600 rounded-lg text-white dark:text-slate-100 flex justify-center items-center">
-              10
-            </span>
-          </h1>
           <p className="uppercase text-primary dark:text-blue-400 text-xs font-bold">
-            Find your next career opportunity with ASPC
+            Why Work With Us
           </p>
+          <h1 className="text-3xl font-bold max-w-3xl dark:text-white">
+            Our Culture
+          </h1>
         </div>
-        {/* positions */}
-        <div className="w-full px-4 py-12">
-          <div className="grid grid-cols-1 gap-6 max-w-4xl mx-auto">
-            {jobsData.map((job) => (
-              <JobCard
-                key={job.id}
-                id={job.id}
-                title={job.title}
-                department={job.department}
-                description={job.description}
-                location={job.location}
-                type={job.type}
+      </FadeInSection>
+
+      <FadeInSection>
+        <div className="px-4 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {cultureData.map((item) => (
+              <CultureCard
+                key={item.id}
+                icon={item.icon}
+                title={item.title}
+                description={item.description}
               />
             ))}
           </div>
         </div>
-      </div>
-      <ReadyTo
-        heading="Don't See a Role That Fits?"
-        paragraph="We're always looking for talented individuals. Send us your resume and we'll keep you in mind for futur opportunities."
-        btnTextOne="Send Your Resume"
-        className="py-20"
-      />
+      </FadeInSection>
+
+      <FadeInSection>
+        <div className="container mx-auto flex flex-col items-center justify-center gap-2">
+          <div className="flex flex-col items-center justify-center gap-3 text-center py-10">
+            <h1 className="text-3xl font-bold max-w-3xl dark:text-white flex items-center gap-3">
+              {"Open Positions "}
+              <span className="py-2 px-4 text-sm border bg-primary dark:bg-blue-600 rounded-lg text-white dark:text-slate-100 flex justify-center items-center">
+                10
+              </span>
+            </h1>
+            <p className="uppercase text-primary dark:text-blue-400 text-xs font-bold">
+              Find your next career opportunity with ASPC
+            </p>
+          </div>
+          {/* positions */}
+          <div className="w-full px-4 py-12">
+            <div className="grid grid-cols-1 gap-6 max-w-4xl mx-auto">
+              {jobsData.map((job) => (
+                <JobCard
+                  key={job.id}
+                  id={job.id}
+                  title={job.title}
+                  department={job.department}
+                  description={job.description}
+                  location={job.location}
+                  type={job.type}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </FadeInSection>
+      <FadeInSection>
+        <ReadyTo
+          heading="Don't See a Role That Fits?"
+          paragraph="We're always looking for talented individuals. Send us your resume and we'll keep you in mind for futur opportunities."
+          btnTextOne="Send Your Resume"
+          className="py-20"
+        />
+      </FadeInSection>
     </div>
   );
 };

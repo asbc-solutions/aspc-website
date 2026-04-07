@@ -2,6 +2,7 @@ import HeadingSection from "@/app/shared/HeadingSection";
 import SolutionTabs from "@/app/_components/solutions/SolutionTabs";
 import Wave from "react-wavify";
 import ReadyTo from "@/app/_components/home/ReadyTo";
+import FadeInSection from "@/app/_components/animation/FadeInSection";
 
 const page = () => {
   return (
@@ -23,14 +24,18 @@ const page = () => {
         }}
       />
 
-      <SolutionTabs />
+      <FadeInSection>
+        <SolutionTabs />
+      </FadeInSection>
 
-      <ReadyTo
-        heading="Need a Custom Solution?"
-        paragraph="Our team of experts can build tailored software solutions that perfectly match your unique business requirements."
-        btnTextOne="Discuss Your Project"
-        className="py-30 bg-[linear-gradient(#1B2472)]! "
-      />
+      <FadeInSection>
+        <ReadyTo
+          heading="Need a Custom Solution?"
+          paragraph="Our team of experts can build tailored software solutions that perfectly match your unique business requirements."
+          btnTextOne="Discuss Your Project"
+          className="py-30 bg-[linear-gradient(#1B2472)]! "
+        />
+      </FadeInSection>
     </div>
   );
 };
