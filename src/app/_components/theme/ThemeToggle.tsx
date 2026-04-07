@@ -2,12 +2,18 @@
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
+import { startTransition, useEffect, useState } from "react";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-  if (!theme) {
-    return null;
+  useEffect(() => {
+    startTransition(() => setMounted(true));
+  }, []);
+
+  if (!mounted) {
+    return <div className="h-9 w-9" />;
   }
 
   return (
