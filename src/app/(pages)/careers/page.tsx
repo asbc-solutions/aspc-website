@@ -98,7 +98,7 @@ const jobsData = [
 
 const page = () => {
   return (
-    <div>
+    <>
       <HeadingSection
         textHeading="Join the Beacon"
         paragraph="We're building the infrastructure of the Arab digital future. Come build with us."
@@ -164,7 +164,6 @@ const page = () => {
               {jobsData.map((job) => (
                 <JobCard
                   key={job.id}
-                  id={job.id}
                   title={job.title}
                   department={job.department}
                   description={job.description}
@@ -184,7 +183,7 @@ const page = () => {
           className="py-20"
         />
       </FadeInSection>
-    </div>
+    </>
   );
 };
 

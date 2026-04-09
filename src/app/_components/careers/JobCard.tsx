@@ -1,8 +1,8 @@
 import { ArrowRight, MapPin, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface JobCardProps {
-  id: number;
   title: string;
   department: string;
   description: string;
@@ -29,9 +29,11 @@ const JobCard = ({
             {department}
           </span>
         </div>
-        <Button className="flex items-center whitespace-nowrap rounded-full dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700">
-          Apply now <ArrowRight className="ml-2 w-4 h-4" />
-        </Button>
+        <Link href={`/careers/apply`}>
+          <Button className="flex items-center whitespace-nowrap rounded-full dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700">
+            Apply now <ArrowRight className="ml-2 w-4 h-4" />
+          </Button>
+        </Link>
       </div>
 
       {/* Footer - Job Details */}
