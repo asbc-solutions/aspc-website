@@ -45,62 +45,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { formSchema } from "@/app/schema";
 
-const formSchema = z.object({
-  firstName: z.string().trim().min(2, "First name is required."),
-  lastName: z.string().trim().min(2, "Last name is required."),
-  emailAddress: z.string().trim().min(1, "Email is required."),
-  phoneNumber: z
-    .string()
-    .trim()
-    .min(7, "Phone number is required.")
-    .max(20, "Phone number must be at most 20 characters."),
-  city: z.string().min(1, "Please select your city."),
-  nationality: z.string().min(1, "Please select your nationality."),
-  workType: z.string().min(1, "Please select your preferred work type."),
-  applyingFor: z.string().min(1, "Please select a position."),
-  yearsExperience: z.string().min(1, "Please select your years of experience."),
-  recentCompany: z.string().trim().optional(),
-  expectedSalary: z.string().trim().optional(),
-  cvLink: z
-    .string()
-    .trim()
-    .refine((value) => value.length === 0 || z.url().safeParse(value).success, {
-      message: "Please enter a valid URL.",
-    }),
-  linkedIn: z
-    .string()
-    .trim()
-    .refine((value) => value.length === 0 || z.url().safeParse(value).success, {
-      message: "Please enter a valid URL.",
-    }),
-  portfolio: z
-    .string()
-    .trim()
-    .refine((value) => value.length === 0 || z.url().safeParse(value).success, {
-      message: "Please enter a valid URL.",
-    }),
-  liveProject: z
-    .string()
-    .trim()
-    .refine((value) => value.length === 0 || z.url().safeParse(value).success, {
-      message: "Please enter a valid URL.",
-    }),
-  coverMessage: z
-    .string()
-    .trim()
-    .min(80, "Cover message must be at least 80 characters.")
-    .max(1200, "Cover message must be at most 1200 characters."),
-  heardAbout: z.array(z.string()).optional(),
-  acceptedPrivacy: z.boolean().refine((value) => value, {
-    message: "You must agree to the privacy policy.",
-  }),
-  certifiedInfo: z.boolean().refine((value) => value, {
-    message: "You must confirm your information is accurate.",
-  }),
-});
-
-const HEARD_ABOUT_OPTIONS = ["LinkedIn", "Referral", "Website", "Other"] as const;
+const HEARD_ABOUT_OPTIONS = [
+  "LinkedIn",
+  "Referral",
+  "Website",
+  "Other",
+] as const;
 const WORK_TYPE_OPTIONS = [
   { value: "on-site", label: "On-site", icon: Briefcase },
   { value: "remote", label: "Remote", icon: Monitor },
@@ -738,29 +690,27 @@ export default function ApplyForm() {
                     <Field className="gap-1.5">
                       <FieldLabel>How did you hear about us?</FieldLabel>
                       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                        {HEARD_ABOUT_OPTIONS.map(
-                          (option) => {
-                            const currentValue = field.value ?? [];
-                            const active = currentValue.includes(option);
-                            const nextValue = active
-                              ? currentValue.filter((item) => item !== option)
-                              : [...currentValue, option];
-                            return (
-                              <button
-                                key={option}
-                                type="button"
-                                className={`rounded-xl border px-3 py-2 text-sm transition ${
-                                  active
-                                    ? "border-primary bg-primary/10 text-primary"
-                                    : "border-[#d6e6ff] text-slate-500"
-                                }`}
-                                onClick={() => field.onChange(nextValue)}
-                              >
-                                {option}
-                              </button>
-                            );
-                          },
-                        )}
+                        {HEARD_ABOUT_OPTIONS.map((option) => {
+                          const currentValue = field.value ?? [];
+                          const active = currentValue.includes(option);
+                          const nextValue = active
+                            ? currentValue.filter((item) => item !== option)
+                            : [...currentValue, option];
+                          return (
+                            <button
+                              key={option}
+                              type="button"
+                              className={`rounded-xl border px-3 py-2 text-sm transition ${
+                                active
+                                  ? "border-primary bg-primary/10 text-primary"
+                                  : "border-[#d6e6ff] text-slate-500"
+                              }`}
+                              onClick={() => field.onChange(nextValue)}
+                            >
+                              {option}
+                            </button>
+                          );
+                        })}
                       </div>
                     </Field>
                   )}
