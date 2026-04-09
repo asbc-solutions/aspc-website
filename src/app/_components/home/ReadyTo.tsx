@@ -1,17 +1,22 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 const ReadyTo = ({
   heading,
   paragraph,
   btnTextOne,
   btnTextTwo,
   className = "",
+  LinkOne = "",
+  LinkTwo = "",
 }: {
   heading: string;
   paragraph: string;
   btnTextOne: string;
   btnTextTwo?: string;
   className?: string;
+  LinkOne?: string;
+  LinkTwo?: string;
 }) => {
   return (
     <div
@@ -24,16 +29,20 @@ const ReadyTo = ({
         {paragraph}
       </p>
       <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 w-full md:w-auto">
-        <Button className="flex items-center rounded-full gap-2 bg-white dark:bg-slate-100 text-primary dark:text-blue-900 font-semibold px-6 py-3 md:p-5 w-full md:w-auto justify-center hover:bg-slate-50 dark:hover:bg-slate-200">
-          {btnTextOne}
-          <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
-        </Button>
-        {btnTextTwo && (
-          <Button
-            className={`flex items-center rounded-full gap-2 bg-transparent dark:bg-transparent text-white dark:text-slate-100 px-6 py-3 md:p-5 border border-white/30 dark:border-slate-400/30 font-semibold w-full md:w-auto justify-center hover:bg-white/10 dark:hover:bg-slate-700/30`}
-          >
-            {btnTextTwo}
+        <Link href={LinkOne}>
+          <Button className="flex items-center rounded-full gap-2 bg-white dark:bg-slate-100 text-primary dark:text-blue-900 font-semibold px-6 py-3 md:p-5 w-full md:w-auto justify-center hover:bg-slate-50 dark:hover:bg-slate-200">
+            {btnTextOne}
+            <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
           </Button>
+        </Link>
+        {btnTextTwo && (
+          <Link href={LinkTwo}>
+            <Button
+              className={`flex items-center rounded-full gap-2 bg-transparent dark:bg-transparent text-white dark:text-slate-100 px-6 py-3 md:p-5 border border-white/30 dark:border-slate-400/30 font-semibold w-full md:w-auto justify-center hover:bg-white/10 dark:hover:bg-slate-700/30`}
+            >
+              {btnTextTwo}
+            </Button>
+          </Link>
         )}
       </div>
     </div>

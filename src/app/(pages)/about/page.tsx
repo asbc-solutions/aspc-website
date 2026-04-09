@@ -67,6 +67,8 @@ const page = () => {
           paragraph="Let's build something great together. Reach out to discuss how we can help transform your business"
           btnTextOne="Contact Us"
           btnTextTwo="Join Our Team"
+          LinkOne="contact-us"
+          LinkTwo="careers"
           className="py-20"
         />
       </FadeInSection>
