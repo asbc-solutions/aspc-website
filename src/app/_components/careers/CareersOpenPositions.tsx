@@ -1,5 +1,3 @@
-"use client";
-
 import { use } from "react";
 import FadeInSection from "@/app/_components/animation/FadeInSection";
 import JobCard from "@/app/_components/careers/JobCard";
