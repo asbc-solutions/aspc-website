@@ -6,8 +6,8 @@ interface JobCardProps {
   title: string;
   department: string;
   description: string;
-  location: "Onsite" | "Remote" | "Hybrid";
-  type: "Full-time" | "Part-time";
+  location: string;
+  type: string;
 }
 
 const JobCard = ({
