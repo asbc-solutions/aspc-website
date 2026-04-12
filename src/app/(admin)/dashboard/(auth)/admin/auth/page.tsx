@@ -1,8 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
-import { toast } from "sonner";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -32,26 +32,8 @@ const loginSchema = z.object({
 
 type LoginValues = z.infer<typeof loginSchema>;
 
-function getApiMessage(payload: unknown): string | undefined {
-  if (!payload || typeof payload !== "object") return undefined;
-  const o = payload as Record<string, unknown>;
-  if (typeof o.message === "string") return o.message;
-  if (typeof o.error === "string") return o.error;
-  if (Array.isArray(o.errors) && o.errors.length > 0) {
-    const first = o.errors[0];
-    if (typeof first === "string") return first;
-  }
-  return undefined;
-}
-
-function authTokenFromBody(body: Record<string, unknown>): string | null {
-  if (typeof body.access_token === "string") return body.access_token;
-  if (typeof body.token === "string") return body.token;
-  if (typeof body.accessToken === "string") return body.accessToken;
-  return null;
-}
-
 export default function AdminAuthPage() {
+  const router = useRouter();
   const controlClassName =
     "h-11 rounded-xl border-slate-200 bg-white px-3 text-sm shadow-xs transition-all placeholder:text-slate-400 focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-primary/15 dark:border-slate-700 dark:bg-slate-900";
 
@@ -64,54 +46,65 @@ export default function AdminAuthPage() {
   });
 
   const onSubmit = async (data: LoginValues) => {
+    form.clearErrors("root");
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+      const res = await fetch("/api/admin/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          email: data.email,
-          password: data.password,
-        }),
-        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
       });
-
-      let payload: unknown;
-      const text = await res.text();
-      try {
-        payload = text ? JSON.parse(text) : {};
-      } catch {
-        payload = { message: text || "Unexpected response from server." };
-      }
+      const json: unknown = await res.json().catch(() => null);
+      const err =
+        json &&
+        typeof json === "object" &&
+        "error" in json &&
+        typeof (json as { error: unknown }).error === "string"
+          ? (json as { error: string }).error
+          : null;
 
       if (!res.ok) {
-        const msg = getApiMessage(payload) ?? `Sign in failed (${res.status}).`;
-        form.setError("root", { message: msg });
-        toast.error("Sign in failed", { description: msg });
+        form.setError("root", {
+          message:
+            err ??
+            (res.status === 503
+              ? "Sign-in is not available. Try again later."
+              : "Could not sign in."),
+        });
         return;
       }
 
-      const body =
-        payload !== null &&
-        typeof payload === "object" &&
-        !Array.isArray(payload)
-          ? (payload as Record<string, unknown>)
-          : null;
-
-      const token = body ? authTokenFromBody(body) : null;
-
-      if (token && globalThis.window !== undefined) {
-        globalThis.localStorage.setItem("admin_token", token);
+      if (
+        json === null ||
+        typeof json !== "object" ||
+        typeof (json as { token?: unknown }).token !== "string" ||
+        typeof (json as { exp?: unknown }).exp !== "number"
+      ) {
+        form.setError("root", { message: "Invalid response from server." });
+        return;
       }
 
-      toast.success("Signed in successfully");
-      form.reset({ email: data.email, password: "" });
+      const { token, exp } = json as { token: string; exp: number };
+
+      const sessionRes = await fetch("/api/admin/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ token, exp }),
+      });
+
+      if (!sessionRes.ok) {
+        form.setError("root", {
+          message: "Signed in but could not start a session. Try again.",
+        });
+        return;
+      }
+
+      router.push("/dashboard");
+      router.refresh();
     } catch {
-      const msg = "Network error. Please try again.";
-      form.setError("root", { message: msg });
-      toast.error(msg);
+      form.setError("root", {
+        message: "Network error. Check your connection and try again.",
+      });
     }
   };
 
