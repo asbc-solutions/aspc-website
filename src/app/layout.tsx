@@ -32,18 +32,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased scroll-smooth`}
     >
       <body className="min-h-full flex flex-col">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <div className="relative z-10">
-            <Header />
-          </div>
-          <main className="grow">{children}</main>
-          <Footer />
-        </ThemeProvider>
+        <main className="grow">{children}</main>
       </body>
     </html>
   );

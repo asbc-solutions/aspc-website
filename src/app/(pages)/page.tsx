@@ -1,12 +1,12 @@
-import Hero from "./_components/header/Hero";
-import FeaturedSolution from "./_components/home/FeaturedSolution";
-import Partners from "./_components/home/Partners";
-import Process from "./_components/home/Process";
-import ReadyTo from "./_components/home/ReadyTo";
-import Serviece from "./_components/home/Serviece";
-import Statistics from "./_components/home/Statistics";
-import WhyUs from "./_components/home/WhyUs";
-import FadeInSection from "./_components/animation/FadeInSection";
+import Hero from "../_components/header/Hero";
+import FeaturedSolution from "../_components/home/FeaturedSolution";
+import Partners from "../_components/home/Partners";
+import Process from "../_components/home/Process";
+import ReadyTo from "../_components/home/ReadyTo";
+import Serviece from "../_components/home/Serviece";
+import Statistics from "../_components/home/Statistics";
+import WhyUs from "../_components/home/WhyUs";
+import FadeInSection from "../_components/animation/FadeInSection";
 
 export default function Home() {
   return (
