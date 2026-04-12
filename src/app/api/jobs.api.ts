@@ -16,9 +16,8 @@ export const getJobsData = async (): Promise<JobPosition[]> => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/careers/positions`,
     );
-    if (!res.ok) return [];
     const payload = await res.json();
-    return Array.isArray(payload.data) ? payload.data : [];
+    return payload.data;
   } catch {
     return [];
   }
