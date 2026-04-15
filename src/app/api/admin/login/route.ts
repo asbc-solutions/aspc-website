@@ -1,26 +1,9 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { createHash, timingSafeEqual } from "node:crypto";
 
-import { issueAdminToken } from "@/lib/admin-token";
-
-function digestEqual(a: string, b: string): boolean {
-  const da = createHash("sha256").update(a, "utf8").digest();
-  const db = createHash("sha256").update(b, "utf8").digest();
-  return da.length === db.length && timingSafeEqual(da, db);
-}
+import { ADMIN_SESSION_COOKIE_NAME } from "@/lib/admin-token";
 
 export async function POST(request: Request) {
-  const adminEmail = process.env.ADMIN_EMAIL;
-  const adminPassword = process.env.ADMIN_PASSWORD;
-  const secret = process.env.ADMIN_SESSION_SECRET;
-
-  if (!adminEmail || !adminPassword || !secret) {
-    return NextResponse.json(
-      { error: "Admin sign-in is not configured on the server." },
-      { status: 503 },
-    );
-  }
-
   let body: unknown;
   try {
     body = await request.json();
@@ -31,31 +14,67 @@ export async function POST(request: Request) {
   if (
     typeof body !== "object" ||
     body === null ||
-    !("email" in body) ||
-    !("password" in body)
+    typeof (body as { email?: unknown }).email !== "string" ||
+    typeof (body as { password?: unknown }).password !== "string"
   ) {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
 
-  const email =
-    typeof (body as { email: unknown }).email === "string"
-      ? (body as { email: string }).email.trim().toLowerCase()
-      : "";
-  const password =
-    typeof (body as { password: unknown }).password === "string"
-      ? (body as { password: string }).password
-      : "";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (!apiUrl) {
+    return NextResponse.json({ error: "API is not configured." }, { status: 503 });
+  }
 
-  const emailOk = digestEqual(email, adminEmail.trim().toLowerCase());
-  const passOk = digestEqual(password, adminPassword);
-
-  if (!emailOk || !passOk) {
+  let backendRes: Response;
+  try {
+    backendRes = await fetch(`${apiUrl}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  } catch {
     return NextResponse.json(
-      { error: "Invalid email or password." },
-      { status: 401 },
+      { error: "Could not reach the server. Check your connection." },
+      { status: 503 },
     );
   }
 
-  const { token, exp } = issueAdminToken(email, secret);
-  return NextResponse.json({ token, exp });
+  const json: unknown = await backendRes.json().catch(() => null);
+
+  if (!backendRes.ok) {
+    const err =
+      json && typeof json === "object" && typeof (json as Record<string, unknown>).message === "string"
+        ? (json as { message: string }).message
+        : "Invalid email or password.";
+    return NextResponse.json({ error: err }, { status: backendRes.status });
+  }
+
+  const nested =
+    json &&
+    typeof json === "object" &&
+    "data" in json &&
+    typeof (json as { data: unknown }).data === "object" &&
+    (json as { data: unknown }).data !== null
+      ? ((json as { data: Record<string, unknown> }).data)
+      : null;
+
+  const token = typeof nested?.token === "string" ? nested.token : null;
+
+  if (!token) {
+    return NextResponse.json(
+      { error: "Invalid response from server." },
+      { status: 502 },
+    );
+  }
+
+  const cookieStore = await cookies();
+  cookieStore.set(ADMIN_SESSION_COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7, // 7 days
+  });
+
+  return NextResponse.json({ ok: true });
 }

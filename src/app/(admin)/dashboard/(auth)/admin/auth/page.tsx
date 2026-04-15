@@ -39,10 +39,7 @@ export default function AdminAuthPage() {
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "asbc.subs2026@gmail.com",
-      password: "asbc@2026",
-    },
+    defaultValues: { email: "asbc.subs2026@gmail.com", password: "asbc@2026" },
   });
 
   const onSubmit = async (data: LoginValues) => {
@@ -53,49 +50,17 @@ export default function AdminAuthPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      const json: unknown = await res.json().catch(() => null);
-      const err =
-        json &&
-        typeof json === "object" &&
-        "error" in json &&
-        typeof (json as { error: unknown }).error === "string"
-          ? (json as { error: string }).error
-          : null;
 
       if (!res.ok) {
-        form.setError("root", {
-          message:
-            err ??
-            (res.status === 503
-              ? "Sign-in is not available. Try again later."
-              : "Could not sign in."),
-        });
-        return;
-      }
-
-      if (
-        json === null ||
-        typeof json !== "object" ||
-        typeof (json as { token?: unknown }).token !== "string" ||
-        typeof (json as { exp?: unknown }).exp !== "number"
-      ) {
-        form.setError("root", { message: "Invalid response from server." });
-        return;
-      }
-
-      const { token, exp } = json as { token: string; exp: number };
-
-      const sessionRes = await fetch("/api/admin/session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "same-origin",
-        body: JSON.stringify({ token, exp }),
-      });
-
-      if (!sessionRes.ok) {
-        form.setError("root", {
-          message: "Signed in but could not start a session. Try again.",
-        });
+        const json: unknown = await res.json().catch(() => null);
+        const err =
+          json &&
+          typeof json === "object" &&
+          "error" in json &&
+          typeof (json as { error: unknown }).error === "string"
+            ? (json as { error: string }).error
+            : "Could not sign in.";
+        form.setError("root", { message: err });
         return;
       }
 

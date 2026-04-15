@@ -1,10 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-import {
-  ADMIN_SESSION_COOKIE_NAME,
-  verifyAdminToken,
-} from "@/lib/admin-token";
+import { ADMIN_SESSION_COOKIE_NAME } from "@/lib/admin-token";
 
 export default async function AdminAppShellLayout({
   children,
@@ -13,12 +10,11 @@ export default async function AdminAppShellLayout({
   children: React.ReactNode;
   sidebar: React.ReactNode;
 }>) {
-  const secret = process.env.ADMIN_SESSION_SECRET;
   const cookieStore = await cookies();
   const token = cookieStore.get(ADMIN_SESSION_COOKIE_NAME)?.value;
 
-  if (!secret || !token || !verifyAdminToken(token, secret)) {
-    redirect("/");
+  if (!token) {
+    redirect("/dashboard/admin/auth");
   }
 
   return (
