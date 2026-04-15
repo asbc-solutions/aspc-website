@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 interface JobCardProps {
+  id: number;
   title: string;
   department: string;
   description: string;
@@ -11,6 +12,7 @@ interface JobCardProps {
 }
 
 const JobCard = ({
+  id,
   title,
   department,
   description,
@@ -29,7 +31,7 @@ const JobCard = ({
             {department}
           </span>
         </div>
-        <Link href={`/careers/apply`}>
+        <Link href={`/careers/apply/${id}`}>
           <Button className="flex items-center whitespace-nowrap rounded-full dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700">
             Apply now <ArrowRight className="ml-2 w-4 h-4" />
           </Button>

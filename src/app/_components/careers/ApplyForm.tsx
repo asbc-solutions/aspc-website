@@ -20,6 +20,11 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import * as z from "zod";
+import {
+  type CareerApplicationAnswerInput,
+  type JobPositionDetails,
+  submitPositionApplication,
+} from "@/app/api/jobs.api";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -59,13 +64,66 @@ const WORK_TYPE_OPTIONS = [
   { value: "hybrid", label: "Hybrid", icon: ArrowLeftRight },
 ] as const;
 
-export default function ApplyForm() {
+type ApplyFormValues = z.infer<typeof formSchema>;
+
+type ApplyFormProps = {
+  position: JobPositionDetails | null;
+};
+
+const normalizeLabel = (value: string): string =>
+  value.toLowerCase().replaceAll(/[^a-z0-9]/g, "");
+
+const buildAnswersFromForm = (
+  position: JobPositionDetails,
+  data: ApplyFormValues,
+): CareerApplicationAnswerInput[] => {
+  const fullName = `${data.firstName} ${data.lastName}`.trim();
+
+  const answerMap: Record<string, string | number | boolean | string[]> = {
+    fullname: fullName,
+    emailaddress: data.emailAddress,
+    phonenumber: data.phoneNumber,
+    yearsofexperience: data.yearsExperience,
+    coverletter: data.coverMessage,
+    portfoliourl: data.portfolio,
+    cvlink: data.cvLink,
+    linkedinprofile: data.linkedIn,
+    city: data.city,
+    nationality: data.nationality,
+    wheredidyouwork: data.recentCompany ?? "",
+    expectedsalarymonthly: data.expectedSalary ?? "",
+    livedemolink: data.liveProject ?? "",
+    frontendframeworks: data.heardAbout ?? [],
+    availabilitytostart: data.workType,
+  };
+
+  return position.form_fields
+    .map((field) => {
+      const mappedValue = answerMap[normalizeLabel(field.label)];
+      if (mappedValue === undefined || mappedValue === "") {
+        return null;
+      }
+
+      return {
+        form_field_id: field.id,
+        value: mappedValue,
+      };
+    })
+    .filter((answer): answer is CareerApplicationAnswerInput => answer !== null);
+};
+
+export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
   const [step, setStep] = React.useState(1);
   const [isSubmitted, setIsSubmitted] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [successMessage, setSuccessMessage] = React.useState(
+    "Your application has been submitted successfully.",
+  );
   const controlClassName =
     "h-11 rounded-xl border-[#d6e6ff] bg-white px-3 text-sm shadow-xs transition-all placeholder:text-slate-400 focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-primary/15 aria-invalid:border-red-500 aria-invalid:ring-red-500/20 dark:border-slate-700 dark:bg-slate-900 dark:aria-invalid:border-red-500";
   const sectionLabelClass =
     "mb-3 mt-1 text-xs font-semibold tracking-[0.18em] text-primary/70 uppercase";
+  const positionTitle = position?.title ?? "";
 
   const stepFieldMap: Record<
     number,
@@ -93,7 +151,7 @@ export default function ApplyForm() {
     3: ["coverMessage", "acceptedPrivacy", "certifiedInfo"],
   };
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<ApplyFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: "",
@@ -103,7 +161,7 @@ export default function ApplyForm() {
       city: "",
       nationality: "Egyptian",
       workType: "on-site",
-      applyingFor: "senior-software-engineer",
+      applyingFor: positionTitle,
       yearsExperience: "5-plus",
       recentCompany: "",
       expectedSalary: "",
@@ -118,26 +176,57 @@ export default function ApplyForm() {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    toast("Application submitted", {
-      description: (
-        <pre className="mt-2 w-[320px] overflow-x-auto rounded-md bg-code p-4 text-code-foreground">
-          <code>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-      position: "bottom-right",
-      classNames: {
-        content: "flex flex-col gap-2",
-      },
-      style: {
-        "--border-radius": "calc(var(--radius) + 4px)",
-      } as React.CSSProperties,
-    });
-    setIsSubmitted(true);
+  const onSubmit = async (data: ApplyFormValues) => {
+    if (!position) {
+      toast.error("Position details are missing. Please refresh the page.");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const answers = buildAnswersFromForm(position, data);
+      const response = await submitPositionApplication(position.id, { answers });
+      console.log(
+        "SubmittedPositionApplicationAnswer[]",
+        response.data.answers,
+      );
+
+      setSuccessMessage(response.message);
+      setIsSubmitted(true);
+      toast("Application submitted", {
+        description: response.message,
+        position: "bottom-right",
+      });
+    } catch {
+      toast.error("Failed to submit application. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const onSubmitAnother = () => {
-    form.reset();
+    form.reset({
+      ...form.getValues(),
+      firstName: "",
+      lastName: "",
+      emailAddress: "",
+      phoneNumber: "",
+      city: "",
+      nationality: "Egyptian",
+      workType: "on-site",
+      yearsExperience: "5-plus",
+      recentCompany: "",
+      expectedSalary: "",
+      cvLink: "",
+      linkedIn: "",
+      portfolio: "",
+      liveProject: "",
+      coverMessage: "",
+      heardAbout: [],
+      acceptedPrivacy: false,
+      certifiedInfo: false,
+      applyingFor: positionTitle,
+    });
     setStep(1);
     setIsSubmitted(false);
   };
@@ -175,8 +264,7 @@ export default function ApplyForm() {
             Application Submitted!
           </h3>
           <p className="mt-5 text-xl leading-relaxed text-[#8eb8ea]">
-            Thank you for applying. Our HR team will review your profile and get
-            back to you within 5-7 business days.
+            {successMessage}
           </p>
           <Button
             type="button"
@@ -440,32 +528,14 @@ export default function ApplyForm() {
                       <FieldLabel htmlFor="app-applying-for">
                         Applying For *
                       </FieldLabel>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger
-                          id="app-applying-for"
-                          className={`w-full ${controlClassName}`}
-                          aria-invalid={fieldState.invalid}
-                        >
-                          <SelectValue placeholder="Select role" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="senior-software-engineer">
-                            Senior Software Engineer
-                          </SelectItem>
-                          <SelectItem value="product-manager">
-                            Product Manager
-                          </SelectItem>
-                          <SelectItem value="ui-ux-designer">
-                            UI/UX Designer
-                          </SelectItem>
-                          <SelectItem value="backend-engineer">
-                            Backend Engineer
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Input
+                        {...field}
+                        id="app-applying-for"
+                        value={positionTitle}
+                        readOnly
+                        className={controlClassName}
+                        aria-invalid={fieldState.invalid}
+                      />
                       {fieldState.invalid && (
                         <FieldError errors={[fieldState.error]} />
                       )}
@@ -676,7 +746,9 @@ export default function ApplyForm() {
                         placeholder="Tell us about your motivation, relevant experience, and what you would bring to the team."
                         className="min-h-32 resize-y rounded-xl border-[#d6e6ff] bg-white px-3 py-2 text-sm shadow-xs placeholder:text-slate-400 focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-primary/15 dark:border-slate-700 dark:bg-slate-900"
                       />
-                      {fieldState.invalid && (
+                      {fieldState.invalid &&
+                        (fieldState.isTouched ||
+                          form.formState.submitCount > 0) && (
                         <FieldError errors={[fieldState.error]} />
                       )}
                     </Field>
@@ -738,7 +810,9 @@ export default function ApplyForm() {
                           Solutions processing my data for recruitment.
                         </span>
                       </label>
-                      {fieldState.invalid && (
+                      {fieldState.invalid &&
+                        (fieldState.isTouched ||
+                          form.formState.submitCount > 0) && (
                         <FieldError errors={[fieldState.error]} />
                       )}
                     </Field>
@@ -767,7 +841,9 @@ export default function ApplyForm() {
                           application is accurate.
                         </span>
                       </label>
-                      {fieldState.invalid && (
+                      {fieldState.invalid &&
+                        (fieldState.isTouched ||
+                          form.formState.submitCount > 0) && (
                         <FieldError errors={[fieldState.error]} />
                       )}
                     </Field>
@@ -797,6 +873,7 @@ export default function ApplyForm() {
                 type="button"
                 className="h-10 rounded-lg px-6"
                 onClick={onContinue}
+                disabled={isSubmitting}
               >
                 Continue
                 <ArrowRight />
@@ -806,8 +883,9 @@ export default function ApplyForm() {
                 type="submit"
                 form="careers-application-form"
                 className="h-10 rounded-lg px-6"
+                disabled={isSubmitting}
               >
-                Submit Application
+                {isSubmitting ? "Submitting..." : "Submit Application"}
                 <Check />
               </Button>
             )}
@@ -827,7 +905,7 @@ export default function ApplyForm() {
                 <p className="text-xs uppercase tracking-wider text-slate-500">
                   Department
                 </p>
-                <p className="font-semibold">Engineering</p>
+                <p className="font-semibold">{position?.department ?? "-"}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -836,7 +914,9 @@ export default function ApplyForm() {
                 <p className="text-xs uppercase tracking-wider text-slate-500">
                   Contract Type
                 </p>
-                <p className="font-semibold">Full-time, Permanent</p>
+                <p className="font-semibold">
+                  {position?.employment_type.label ?? "-"}
+                </p>
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -845,7 +925,7 @@ export default function ApplyForm() {
                 <p className="text-xs uppercase tracking-wider text-slate-500">
                   Location
                 </p>
-                <p className="font-semibold">Cairo, Egypt (Hybrid)</p>
+                <p className="font-semibold">{position?.work_type.label ?? "-"}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -854,7 +934,7 @@ export default function ApplyForm() {
                 <p className="text-xs uppercase tracking-wider text-slate-500">
                   Level
                 </p>
-                <p className="font-semibold">Senior (5+ years)</p>
+                <p className="font-semibold">{position?.experience ?? "-"}</p>
               </div>
             </div>
           </CardContent>

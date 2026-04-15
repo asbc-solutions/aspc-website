@@ -9,6 +9,7 @@ export default function CareersOpenPositions({
   jobsPromise: Promise<JobPosition[]>;
 }>) {
   const jobs = use(jobsPromise);
+  console.log(jobs);
 
   return (
     <FadeInSection>
@@ -29,6 +30,7 @@ export default function CareersOpenPositions({
             {jobs.map((job) => (
               <JobCard
                 key={job.id}
+                id={job.id}
                 title={job.title}
                 department={job.department}
                 description={job.description}
