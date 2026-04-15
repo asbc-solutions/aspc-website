@@ -131,14 +131,14 @@ export default function DashboardPage() {
             <Bell size={16} />
             <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500" />
           </button>
-          <button
+          {/* <button
             type="button"
             className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-white"
             style={{ backgroundColor: "#1e3fb0" }}
           >
             <Plus size={15} />
             Add Position
-          </button>
+          </button> */}
         </div>
       </header>
 
