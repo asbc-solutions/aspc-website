@@ -1,20 +1,23 @@
 "use client";
 
+import { LogOut } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { startTransition, useEffect, useState } from "react";
 
 const navItemClass =
-  "rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800";
+  "rounded-lg px-3 py-2 text-sm font-medium text-[#c8d9f5] hover:bg-white/5 transition-colors";
 
 async function fetchSessionAuthenticated(): Promise<boolean> {
   try {
-    const res = await fetch("/api/admin/session", { credentials: "same-origin" });
+    const res = await fetch("/api/admin/session", {
+      credentials: "same-origin",
+    });
     const data: unknown = await res.json().catch(() => null);
     return Boolean(
       data &&
-        typeof data === "object" &&
-        (data as { authenticated?: unknown }).authenticated === true,
+      typeof data === "object" &&
+      (data as { authenticated?: unknown }).authenticated === true,
     );
   } catch {
     return false;
@@ -64,9 +67,9 @@ export function AdminSessionNav() {
       <button
         type="button"
         onClick={() => void signOut()}
-        className={`${navItemClass} w-full text-left`}
+        className={`${navItemClass} text-left w-fit`}
       >
-        Sign out
+        <LogOut className="text-red-400" />
       </button>
     );
   }

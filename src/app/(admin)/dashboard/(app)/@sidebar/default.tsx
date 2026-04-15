@@ -1,24 +1,51 @@
-import Link from "next/link";
-
 import { AdminSessionNav } from "./AdminSessionNav";
-
-const navItemClass =
-  "rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800";
+import { SidebarNav } from "./SidebarNav";
 
 export default function AdminSidebarDefault() {
   return (
-    <aside className="w-56 shrink-0 border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-      <div className="border-b border-slate-200 px-4 py-3 dark:border-slate-800">
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-          Admin
-        </p>
+    <aside
+      className="flex w-64 shrink-0 flex-col min-h-screen justify-between border-r"
+      style={{ backgroundColor: "#071848" }}
+    >
+      {/* Logo + company */}
+      <div className="flex items-center gap-3 px-5 py-6">
+        <div>
+          <p className="text-sm font-semibold leading-tight text-white">
+            Arabian Solutions
+          </p>
+          <p
+            className="text-xs font-medium uppercase tracking-widest"
+            style={{ color: "#6b8cca" }}
+          >
+            HR Admin
+          </p>
+        </div>
       </div>
-      <nav className="flex flex-col gap-0.5 p-3">
-        <Link href="/dashboard" className={navItemClass}>
-          Overview
-        </Link>
+
+      {/* Navigation (client — needs usePathname for active state) */}
+      <SidebarNav />
+
+      {/* Footer — user info + sign out */}
+      <div
+        className="border-t px-4 py-4 flex items-center justify-between"
+        style={{ borderColor: "#0f2460" }}
+      >
+        <div className=" flex items-center gap-3">
+          <div
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+            style={{ backgroundColor: "#2563eb" }}
+          >
+            A
+          </div>
+          <div>
+            <p className="text-sm font-medium text-white">Admin User</p>
+            <p className="text-xs" style={{ color: "#6b8cca" }}>
+              HR Manager
+            </p>
+          </div>
+        </div>
         <AdminSessionNav />
-      </nav>
+      </div>
     </aside>
   );
 }

@@ -14,7 +14,7 @@ export default async function AdminAppShellLayout({
   const token = cookieStore.get(ADMIN_SESSION_COOKIE_NAME)?.value;
 
   if (!token) {
-    redirect("/dashboard/admin/auth");
+    redirect("/");
   }
 
   return (
