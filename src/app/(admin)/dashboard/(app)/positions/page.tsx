@@ -12,7 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
@@ -197,7 +197,7 @@ function PositionModal({
     setError,
     formState: { errors, isSubmitting },
   } = useForm<PositionFormValues>({
-    resolver: zodResolver(positionSchema),
+    resolver: zodResolver(positionSchema) as Resolver<PositionFormValues>,
     defaultValues: {
       title: "",
       department: "",
