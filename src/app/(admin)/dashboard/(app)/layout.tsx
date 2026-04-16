@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { AdminAppShell } from "@/components/admin/admin-app-shell";
 import { ADMIN_SESSION_COOKIE_NAME } from "@/lib/admin-token";
 
 export default async function AdminAppShellLayout({
@@ -17,10 +18,5 @@ export default async function AdminAppShellLayout({
     redirect("/");
   }
 
-  return (
-    <div className="flex min-h-dvh">
-      {sidebar}
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col">{children}</div>
-    </div>
-  );
+  return <AdminAppShell sidebar={sidebar}>{children}</AdminAppShell>;
 }

@@ -1,14 +1,13 @@
 "use client";
 
 import {
-  Bell,
   ChevronDown,
   Eye,
-  Plus,
   RefreshCw,
   Search,
 } from "lucide-react";
 import { useState } from "react";
+import { AdminPageHeader } from "@/components/admin/admin-page-header";
 
 // ── types ────────────────────────────────────────────────────────────────────
 
@@ -71,32 +70,9 @@ export default function ApplicationsPage() {
 
   return (
     <div className="flex flex-1 flex-col bg-[#f5f7ff]">
-      {/* Top bar */}
-      <header className="flex items-center justify-between border-b border-[rgba(0,0,0,0.06)] bg-white px-8 py-4">
-        <div>
-          <h1 className="text-xl font-bold text-[#0d1240]">All Applications</h1>
-          <p className="text-xs text-[#6b7280]">Monday, 8 April 2026</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            className="relative flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(0,0,0,0.08)] bg-white text-[#6b7280] hover:bg-gray-50"
-          >
-            <Bell size={16} />
-            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500" />
-          </button>
-          {/* <button
-            type="button"
-            className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-white"
-            style={{ backgroundColor: "#1e3fb0" }}
-          >
-            <Plus size={15} />
-            Add Position
-          </button> */}
-        </div>
-      </header>
+      <AdminPageHeader title="All Applications" />
 
-      <main className="flex flex-1 flex-col gap-6 p-8">
+      <main className="flex flex-1 flex-col gap-6 p-4 sm:p-6 lg:p-8">
         {/* Section heading */}
         <div>
           <h2 className="text-lg font-bold text-[#0d1240]">All Applications</h2>
@@ -121,7 +97,7 @@ export default function ApplicationsPage() {
               />
             </div>
 
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
@@ -138,7 +114,7 @@ export default function ApplicationsPage() {
               />
             </div>
 
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               <select
                 value={positionFilter}
                 onChange={(e) => setPositionFilter(e.target.value)}
@@ -158,7 +134,7 @@ export default function ApplicationsPage() {
 
           {/* Table */}
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="min-w-[860px] w-full text-sm">
               <thead>
                 <tr className="border-b border-[rgba(0,0,0,0.06)] bg-[#f9fafb]">
                   {["Applicant", "Position", "Status", "Work Type", "Applied", "Score"].map(

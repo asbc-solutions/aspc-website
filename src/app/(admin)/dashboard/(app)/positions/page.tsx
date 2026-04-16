@@ -1,7 +1,8 @@
 "use client";
 
-import { Bell, Briefcase, Calendar, ChevronDown, MapPin, Pencil, Plus, Search, Trash2, X } from "lucide-react";
+import { Briefcase, Calendar, ChevronDown, MapPin, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { AdminPageHeader } from "@/components/admin/admin-page-header";
 
 type PositionStatus = "Active" | "Paused";
 
@@ -530,33 +531,10 @@ export default function PositionsPage() {
   return (
     <>
       <div className="flex flex-1 flex-col bg-[#f5f7ff]">
-        <header className="flex items-center justify-between border-b border-[rgba(0,0,0,0.06)] bg-white px-8 py-4">
-          <div>
-            <h1 className="text-xl font-bold text-[#0d1240]"> Positions</h1>
-            <p className="text-xs text-[#6b7280]">Monday, 8 April 2026</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              className="relative flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(0,0,0,0.08)] bg-white text-[#6b7280] hover:bg-gray-50"
-            >
-              <Bell size={16} />
-              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500" />
-            </button>
-            {/* <button
-              type="button"
-              className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-white"
-              style={{ backgroundColor: "#1e3fb0" }}
-              onClick={openCreateModal}
-            >
-              <Plus size={15} />
-              Add Position
-            </button> */}
-          </div>
-        </header>
+        <AdminPageHeader title="Positions" />
 
-        <main className="flex flex-1 flex-col gap-6 p-8">
-          <div className="flex items-start justify-between">
+        <main className="flex flex-1 flex-col gap-6 p-4 sm:p-6 lg:p-8">
+          <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <h2 className="text-lg font-bold text-[#0d1240]">Open Positions</h2>
               <p className="text-sm text-[#6b7280]">{activeRolesCount} active roles</p>
@@ -590,7 +568,7 @@ export default function PositionsPage() {
               />
             </div>
 
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               <select
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
@@ -604,7 +582,7 @@ export default function PositionsPage() {
               <ChevronDown size={13} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[#6b7280]" />
             </div>
 
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}

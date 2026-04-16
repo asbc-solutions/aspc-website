@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Briefcase, Clock, FileText, Plus, UserCheck } from "lucide-react";
+import { Briefcase, Clock, FileText, UserCheck } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -11,6 +11,7 @@ import {
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import type { ChartConfig } from "@/components/ui/chart";
+import { AdminPageHeader } from "@/components/admin/admin-page-header";
 
 // ── data ────────────────────────────────────────────────────────────────────
 
@@ -117,34 +118,11 @@ const statusColors: Record<string, { bg: string; dot: string; text: string }> = 
 export default function DashboardPage() {
   return (
     <div className="flex flex-1 flex-col bg-[#f5f7ff]">
-      {/* Top bar */}
-      <header className="flex items-center justify-between border-b border-[rgba(0,0,0,0.06)] bg-white px-8 py-4">
-        <div>
-          <h1 className="text-xl font-bold text-[#0d1240]">Dashboard Overview</h1>
-          <p className="text-xs text-[#6b7280]">Monday, 8 April 2026</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            className="relative flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(0,0,0,0.08)] bg-white text-[#6b7280] hover:bg-gray-50"
-          >
-            <Bell size={16} />
-            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500" />
-          </button>
-          {/* <button
-            type="button"
-            className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-white"
-            style={{ backgroundColor: "#1e3fb0" }}
-          >
-            <Plus size={15} />
-            Add Position
-          </button> */}
-        </div>
-      </header>
+      <AdminPageHeader title="Dashboard Overview" />
 
-      <main className="flex flex-1 flex-col gap-6 p-8">
+      <main className="flex flex-1 flex-col gap-6 p-4 sm:p-6 lg:p-8">
         {/* Stat cards */}
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map(({ label, value, badge, badgeColor, badgeText, icon: Icon, iconBg, iconColor, accent }) => (
             <div
               key={label}
@@ -224,7 +202,7 @@ export default function DashboardPage() {
 
         {/* Recent Applications */}
         <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-white shadow-sm">
-          <div className="flex items-start justify-between border-b border-[rgba(0,0,0,0.06)] px-6 py-4">
+          <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[rgba(0,0,0,0.06)] px-4 py-4 sm:px-6">
             <div>
               <h2 className="text-base font-semibold text-[#0d1240]">Recent Applications</h2>
               <p className="text-xs text-[#6b7280]">Latest submissions across all positions</p>
@@ -237,7 +215,8 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+            <table className="min-w-[680px] w-full text-sm">
             <thead>
               <tr className="border-b border-[rgba(0,0,0,0.06)] bg-[#f9fafb]">
                 {["Applicant", "Position", "Status", "Applied", "Score"].map((col) => (
@@ -314,7 +293,8 @@ export default function DashboardPage() {
                 );
               })}
             </tbody>
-          </table>
+            </table>
+          </div>
         </div>
       </main>
     </div>
