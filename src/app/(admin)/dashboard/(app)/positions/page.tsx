@@ -1,6 +1,16 @@
 "use client";
 
-import { Briefcase, Calendar, ChevronDown, MapPin, Pencil, Plus, Search, Trash2, X } from "lucide-react";
+import {
+  Briefcase,
+  Calendar,
+  ChevronDown,
+  MapPin,
+  Pencil,
+  Plus,
+  Search,
+  Trash2,
+  X,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 
@@ -29,7 +39,10 @@ type PositionForm = {
   description: string;
 };
 
-const statusStyles: Record<PositionStatus, { bg: string; dot: string; text: string }> = {
+const statusStyles: Record<
+  PositionStatus,
+  { bg: string; dot: string; text: string }
+> = {
   Active: { bg: "#dcfce7", dot: "#22c55e", text: "#15803d" },
   Paused: { bg: "#ffedd5", dot: "#f97316", text: "#c2410c" },
 };
@@ -51,7 +64,9 @@ const textOr = (value: unknown, fallback = "") =>
   typeof value === "string" && value.trim().length > 0 ? value : fallback;
 
 const toStatus = (value: unknown): PositionStatus =>
-  typeof value === "string" && value.toLowerCase() === "paused" ? "Paused" : "Active";
+  typeof value === "string" && value.toLowerCase() === "paused"
+    ? "Paused"
+    : "Active";
 
 const toDateLabel = (value: unknown) => {
   if (typeof value !== "string" || value.length === 0) {
@@ -79,8 +94,12 @@ const normalizePosition = (raw: unknown): Position | null => {
     return null;
   }
 
-  const workTypeValue = isRecord(raw.work_type) ? raw.work_type.label : raw.work_type;
-  const employmentTypeValue = isRecord(raw.employment_type) ? raw.employment_type.label : raw.employment_type;
+  const workTypeValue = isRecord(raw.work_type)
+    ? raw.work_type.label
+    : raw.work_type;
+  const employmentTypeValue = isRecord(raw.employment_type)
+    ? raw.employment_type.label
+    : raw.employment_type;
   const statusValue = isRecord(raw.status) ? raw.status.label : raw.status;
 
   const workType = textOr(workTypeValue, "Not set");
@@ -93,7 +112,8 @@ const normalizePosition = (raw: unknown): Position | null => {
   } else if (typeof raw.applicants === "number") {
     applicants = raw.applicants;
   }
-  const maxApplicants = typeof raw.max_applicants === "number" ? raw.max_applicants : 100;
+  const maxApplicants =
+    typeof raw.max_applicants === "number" ? raw.max_applicants : 100;
 
   return {
     id,
@@ -140,8 +160,14 @@ function PositionModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4">
-      <div className="w-full max-w-xl rounded-2xl bg-white shadow-2xl">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-xl rounded-2xl bg-white shadow-2xl"
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className="flex items-center justify-between border-b border-[rgba(0,0,0,0.08)] px-6 py-4">
           <h3 className="text-lg font-semibold text-[#0d1240]">{modalTitle}</h3>
           <button
@@ -255,7 +281,10 @@ function PositionCard({
   onDelete: (position: Position) => void;
 }>) {
   const stat = statusStyles[position.status];
-  const pct = Math.min(100, (position.applicants / Math.max(position.maxApplicants, 1)) * 100);
+  const pct = Math.min(
+    100,
+    (position.applicants / Math.max(position.maxApplicants, 1)) * 100,
+  );
 
   return (
     <div className="flex flex-col gap-4 rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-5 shadow-sm transition-shadow hover:shadow-md">
@@ -318,7 +347,10 @@ function PositionCard({
           className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold"
           style={{ backgroundColor: stat.bg, color: stat.text }}
         >
-          <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: stat.dot }} />
+          <span
+            className="h-1.5 w-1.5 rounded-full"
+            style={{ backgroundColor: stat.dot }}
+          />
           {position.status}
         </span>
         <span className="text-xs text-[#9ca3af]">{position.postedDate}</span>
@@ -339,12 +371,19 @@ export default function PositionsPage() {
   const [editingPosition, setEditingPosition] = useState<Position | null>(null);
   const [form, setForm] = useState<PositionForm>(defaultForm);
   const [saving, setSaving] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [positionToDelete, setPositionToDelete] = useState<Position | null>(
+    null,
+  );
+  const [deleting, setDeleting] = useState(false);
 
   const loadPositions = async () => {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/admin/careers/positions", { cache: "no-store" });
+      const res = await fetch("/api/admin/careers/positions", {
+        cache: "no-store",
+      });
       const payload: unknown = await res.json().catch(() => null);
 
       if (!res.ok) {
@@ -362,10 +401,16 @@ export default function PositionsPage() {
         rawList = payload;
       }
 
-      const normalized = rawList.map(normalizePosition).filter((item): item is Position => item !== null);
+      const normalized = rawList
+        .map(normalizePosition)
+        .filter((item): item is Position => item !== null);
       setPositions(normalized);
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Failed to load positions.");
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Failed to load positions.",
+      );
       setPositions([]);
     } finally {
       setLoading(false);
@@ -377,14 +422,22 @@ export default function PositionsPage() {
   }, []);
 
   const departments = useMemo(
-    () => Array.from(new Set(positions.map((positionItem) => positionItem.department))).filter(Boolean),
+    () =>
+      Array.from(
+        new Set(positions.map((positionItem) => positionItem.department)),
+      ).filter(Boolean),
     [positions],
   );
 
   const filtered = positions.filter((positionItem) => {
-    const matchSearch = positionItem.title.toLowerCase().includes(search.toLowerCase());
-    const matchDept = department === "All Departments" || positionItem.department === department;
-    const matchStatus = status === "All Status" || positionItem.status === status;
+    const matchSearch = positionItem.title
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    const matchDept =
+      department === "All Departments" ||
+      positionItem.department === department;
+    const matchStatus =
+      status === "All Status" || positionItem.status === status;
     return matchSearch && matchDept && matchStatus;
   });
 
@@ -462,25 +515,45 @@ export default function PositionsPage() {
       setIsModalOpen(false);
       setEditingPosition(null);
       setForm(defaultForm);
+      console.log("Saved position:", payload);
       await loadPositions();
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Failed to save position.");
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Failed to save position.",
+      );
     } finally {
       setSaving(false);
     }
   };
 
-  const handleDelete = async (positionItem: Position) => {
-    const confirmed = globalThis.window.confirm(`Delete "${positionItem.title}"?`);
-    if (!confirmed) {
+  const openDeleteModal = (positionItem: Position) => {
+    setPositionToDelete(positionItem);
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    if (!deleting) {
+      setIsDeleteModalOpen(false);
+      setPositionToDelete(null);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!positionToDelete) {
       return;
     }
 
+    setDeleting(true);
     setError("");
     try {
-      const res = await fetch(`/api/admin/careers/positions/${positionItem.id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `/api/admin/careers/positions/${positionToDelete.id}`,
+        {
+          method: "DELETE",
+        },
+      );
       const payload: unknown = await res.json().catch(() => null);
 
       if (!res.ok) {
@@ -492,12 +565,22 @@ export default function PositionsPage() {
       }
 
       await loadPositions();
+      setIsDeleteModalOpen(false);
+      setPositionToDelete(null);
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Failed to delete position.");
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Failed to delete position.",
+      );
+    } finally {
+      setDeleting(false);
     }
   };
 
-  const activeRolesCount = positions.filter((positionItem) => positionItem.status === "Active").length;
+  const activeRolesCount = positions.filter(
+    (positionItem) => positionItem.status === "Active",
+  ).length;
 
   let positionsContent: React.ReactNode;
   if (loading) {
@@ -514,7 +597,7 @@ export default function PositionsPage() {
             key={positionItem.id}
             position={positionItem}
             onEdit={openEditModal}
-            onDelete={handleDelete}
+            onDelete={openDeleteModal}
           />
         ))}
       </div>
@@ -523,7 +606,9 @@ export default function PositionsPage() {
     positionsContent = (
       <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-xl border border-[rgba(0,0,0,0.06)] bg-white py-20 text-center shadow-sm">
         <Briefcase size={36} className="text-[#cbd5e1]" />
-        <p className="text-sm font-medium text-[#6b7280]">No positions match your filters</p>
+        <p className="text-sm font-medium text-[#6b7280]">
+          No positions match your filters
+        </p>
       </div>
     );
   }
@@ -536,8 +621,12 @@ export default function PositionsPage() {
         <main className="flex flex-1 flex-col gap-6 p-4 sm:p-6 lg:p-8">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h2 className="text-lg font-bold text-[#0d1240]">Open Positions</h2>
-              <p className="text-sm text-[#6b7280]">{activeRolesCount} active roles</p>
+              <h2 className="text-lg font-bold text-[#0d1240]">
+                Open Positions
+              </h2>
+              <p className="text-sm text-[#6b7280]">
+                {activeRolesCount} active roles
+              </p>
             </div>
             <button
               type="button"
@@ -558,7 +647,10 @@ export default function PositionsPage() {
 
           <div className="flex flex-wrap items-center gap-3 rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-4 shadow-sm">
             <div className="relative min-w-50 flex-1">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9ca3af]" />
+              <Search
+                size={14}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9ca3af]"
+              />
               <input
                 type="text"
                 placeholder="Search positions..."
@@ -579,7 +671,10 @@ export default function PositionsPage() {
                   <option key={departmentName}>{departmentName}</option>
                 ))}
               </select>
-              <ChevronDown size={13} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[#6b7280]" />
+              <ChevronDown
+                size={13}
+                className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[#6b7280]"
+              />
             </div>
 
             <div className="relative w-full sm:w-auto">
@@ -592,7 +687,10 @@ export default function PositionsPage() {
                 <option>Active</option>
                 <option>Paused</option>
               </select>
-              <ChevronDown size={13} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[#6b7280]" />
+              <ChevronDown
+                size={13}
+                className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[#6b7280]"
+              />
             </div>
           </div>
 
@@ -609,6 +707,58 @@ export default function PositionsPage() {
         onChange={handleFormChange}
         onSubmit={handleSave}
       />
+
+      {isDeleteModalOpen && positionToDelete && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4"
+          onClick={closeDeleteModal}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-[#0d1240]">
+                Delete position
+              </h3>
+              <button
+                type="button"
+                onClick={closeDeleteModal}
+                className="rounded-md p-1.5 text-[#6b7280] hover:bg-[#f3f4f6]"
+                aria-label="Close"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <p className="mt-3 text-sm text-[#4b5563]">
+              Are you sure you want to delete{" "}
+              <span className="font-semibold">
+                &quot;{positionToDelete.title}&quot;
+              </span>
+              ? This action cannot be undone.
+            </p>
+            <div className="mt-5 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={closeDeleteModal}
+                className="rounded-lg border border-[rgba(0,0,0,0.12)] px-4 py-2 text-sm font-semibold text-[#374151]"
+                disabled={deleting}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                disabled={deleting}
+                className="rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+                style={{ backgroundColor: "#dc2626" }}
+              >
+                {deleting ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

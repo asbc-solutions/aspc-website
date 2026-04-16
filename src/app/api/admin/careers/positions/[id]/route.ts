@@ -26,7 +26,10 @@ type Context = {
 export async function PUT(request: Request, context: Context) {
   const apiUrl = getApiUrl();
   if (!apiUrl) {
-    return NextResponse.json({ message: "API is not configured." }, { status: 503 });
+    return NextResponse.json(
+      { message: "API is not configured." },
+      { status: 503 },
+    );
   }
 
   const headers = await getAuthHeaders();
@@ -38,7 +41,10 @@ export async function PUT(request: Request, context: Context) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ message: "Invalid request body." }, { status: 400 });
+    return NextResponse.json(
+      { message: "Invalid request body." },
+      { status: 400 },
+    );
   }
 
   const { id } = await context.params;
@@ -49,8 +55,27 @@ export async function PUT(request: Request, context: Context) {
       headers,
       body: JSON.stringify(body),
     });
-    const payload: unknown = await res.json().catch(() => null);
-    return NextResponse.json(payload ?? { message: "Invalid upstream response." }, { status: res.status });
+
+    const payload: unknown = await res
+      .json()
+      .catch(() => null);
+
+    if (payload === null && res.ok) {
+      // Upstream returned a successful status with no JSON body
+      return NextResponse.json(
+        { status: true, message: "Position updated successfully." },
+        { status: res.status },
+      );
+    }
+
+    if (payload === null) {
+      return NextResponse.json(
+        { message: "Invalid upstream response." },
+        { status: res.status },
+      );
+    }
+
+    return NextResponse.json(payload, { status: res.status });
   } catch {
     return NextResponse.json(
       { message: "Could not reach the backend server." },
@@ -62,7 +87,10 @@ export async function PUT(request: Request, context: Context) {
 export async function DELETE(_: Request, context: Context) {
   const apiUrl = getApiUrl();
   if (!apiUrl) {
-    return NextResponse.json({ message: "API is not configured." }, { status: 503 });
+    return NextResponse.json(
+      { message: "API is not configured." },
+      { status: 503 },
+    );
   }
 
   const headers = await getAuthHeaders();
@@ -78,7 +106,10 @@ export async function DELETE(_: Request, context: Context) {
       headers,
     });
     const payload: unknown = await res.json().catch(() => null);
-    return NextResponse.json(payload ?? { message: "Invalid upstream response." }, { status: res.status });
+    return NextResponse.json(
+      payload ?? { message: "Invalid upstream response." },
+      { status: res.status },
+    );
   } catch {
     return NextResponse.json(
       { message: "Could not reach the backend server." },
