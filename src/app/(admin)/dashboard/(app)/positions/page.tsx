@@ -12,152 +12,260 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
+
+// ─── Options ─────────────────────────────────────────────────────────────────
+
+const WORK_TYPE_OPTIONS = [
+  { label: "On-site", value: 1 },
+  { label: "Hybrid", value: 2 },
+  { label: "Remote", value: 3 },
+];
+
+const EMPLOYMENT_TYPE_OPTIONS = [
+  { label: "Full-time", value: 1 },
+  { label: "Part-time", value: 2 },
+  { label: "Contract", value: 3 },
+  { label: "Internship", value: 4 },
+];
+
+const STATUS_OPTIONS = [
+  { label: "Active", value: 1 },
+  { label: "Paused", value: 2 },
+];
+
+// ─── Schema ───────────────────────────────────────────────────────────────────
+
+const positionSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  department: z.string().min(1, "Department is required"),
+  work_type: z.coerce.number().int().min(1),
+  employment_type: z.coerce.number().int().min(1),
+  experience: z.string().min(1, "Experience is required"),
+  description: z.string().min(1, "Description is required"),
+  status: z.coerce.number().int().min(1),
+});
+
+type PositionFormValues = z.infer<typeof positionSchema>;
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 type PositionStatus = "Active" | "Paused";
 
 type Position = {
   id: number;
   title: string;
+  description: string;
   department: string;
   location: string;
   workType: string;
+  workTypeId: number;
   level: string;
+  employmentTypeId: number;
   applicants: number;
   maxApplicants: number;
   status: PositionStatus;
+  statusId: number;
   postedDate: string;
 };
 
-type PositionForm = {
-  title: string;
-  department: string;
-  location: string;
-  workType: string;
-  level: string;
-  status: PositionStatus;
-  description: string;
-};
+// ─── Utilities ────────────────────────────────────────────────────────────────
 
-const statusStyles: Record<
-  PositionStatus,
-  { bg: string; dot: string; text: string }
-> = {
+const statusStyles: Record<PositionStatus, { bg: string; dot: string; text: string }> = {
   Active: { bg: "#dcfce7", dot: "#22c55e", text: "#15803d" },
   Paused: { bg: "#ffedd5", dot: "#f97316", text: "#c2410c" },
 };
 
-const defaultForm: PositionForm = {
-  title: "",
-  department: "",
-  location: "",
-  workType: "Hybrid",
-  level: "Mid-level",
-  status: "Active",
-  description: "",
-};
+const isRecord = (v: unknown): v is Record<string, unknown> =>
+  typeof v === "object" && v !== null;
 
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null;
+const textOr = (v: unknown, fallback = "") =>
+  typeof v === "string" && v.trim().length > 0 ? v : fallback;
 
-const textOr = (value: unknown, fallback = "") =>
-  typeof value === "string" && value.trim().length > 0 ? value : fallback;
+const toStatus = (v: unknown): PositionStatus =>
+  typeof v === "string" && v.toLowerCase() === "paused" ? "Paused" : "Active";
 
-const toStatus = (value: unknown): PositionStatus =>
-  typeof value === "string" && value.toLowerCase() === "paused"
-    ? "Paused"
-    : "Active";
-
-const toDateLabel = (value: unknown) => {
-  if (typeof value !== "string" || value.length === 0) {
-    return "-";
-  }
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) {
-    return "-";
-  }
-  return parsed.toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+const toDateLabel = (v: unknown) => {
+  if (typeof v !== "string" || !v) return "-";
+  const d = new Date(v);
+  return Number.isNaN(d.getTime())
+    ? "-"
+    : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 };
 
 const normalizePosition = (raw: unknown): Position | null => {
-  if (!isRecord(raw)) {
-    return null;
-  }
+  if (!isRecord(raw)) return null;
 
   const id = typeof raw.id === "number" ? raw.id : null;
   const title = textOr(raw.title);
-  if (id === null || !title) {
-    return null;
-  }
+  if (id === null || !title) return null;
 
-  const workTypeValue = isRecord(raw.work_type)
-    ? raw.work_type.label
-    : raw.work_type;
-  const employmentTypeValue = isRecord(raw.employment_type)
-    ? raw.employment_type.label
-    : raw.employment_type;
-  const statusValue = isRecord(raw.status) ? raw.status.label : raw.status;
+  const workTypeObj = isRecord(raw.work_type) ? raw.work_type : null;
+  const employmentTypeObj = isRecord(raw.employment_type) ? raw.employment_type : null;
+  const statusObj = isRecord(raw.status) ? raw.status : null;
 
-  const workType = textOr(workTypeValue, "Not set");
-  const level = textOr(raw.experience, textOr(employmentTypeValue, "Not set"));
-  const status = toStatus(statusValue);
+  const workTypeLabel = textOr(workTypeObj ? workTypeObj.label : raw.work_type, "Not set");
+  const workTypeId = workTypeObj && typeof workTypeObj.id === "number" ? workTypeObj.id : 0;
+
+  const employmentTypeLabel = textOr(
+    employmentTypeObj ? employmentTypeObj.label : raw.employment_type,
+    "Not set",
+  );
+  const employmentTypeId =
+    employmentTypeObj && typeof employmentTypeObj.id === "number" ? employmentTypeObj.id : 0;
+
+  const statusLabel = textOr(statusObj ? statusObj.label : raw.status, "active");
+  const statusId =
+    statusObj && typeof statusObj.id === "number"
+      ? statusObj.id
+      : statusLabel.toLowerCase() === "paused"
+        ? 2
+        : 1;
+  const status = toStatus(statusLabel);
 
   let applicants = 0;
-  if (typeof raw.applications_count === "number") {
-    applicants = raw.applications_count;
-  } else if (typeof raw.applicants === "number") {
-    applicants = raw.applicants;
-  }
-  const maxApplicants =
-    typeof raw.max_applicants === "number" ? raw.max_applicants : 100;
+  if (typeof raw.applications_count === "number") applicants = raw.applications_count;
+  else if (typeof raw.applicants === "number") applicants = raw.applicants;
 
   return {
     id,
     title,
+    description: textOr(raw.description, ""),
     department: textOr(raw.department, "General"),
     location: textOr(raw.location, "Not specified"),
-    workType,
-    level,
+    workType: workTypeLabel,
+    workTypeId,
+    level: textOr(raw.experience, textOr(employmentTypeLabel, "Not set")),
+    employmentTypeId,
     applicants,
-    maxApplicants,
+    maxApplicants: typeof raw.max_applicants === "number" ? raw.max_applicants : 100,
     status,
+    statusId,
     postedDate: toDateLabel(raw.created_at),
   };
 };
 
+// ─── Field component ──────────────────────────────────────────────────────────
+
+function Field({
+  label,
+  error,
+  children,
+  fullWidth,
+}: Readonly<{
+  label: string;
+  error?: string;
+  children: React.ReactNode;
+  fullWidth?: boolean;
+}>) {
+  return (
+    <label className={`flex flex-col gap-1.5 text-sm text-[#374151]${fullWidth ? " col-span-full" : ""}`}>
+      <span>{label}</span>
+      {children}
+      {error && <span className="text-xs text-red-600">{error}</span>}
+    </label>
+  );
+}
+
+const inputClass =
+  "rounded-lg border border-[rgba(0,0,0,0.12)] px-3 py-2 outline-none focus:border-[#1e3fb0]";
+const selectClass =
+  "rounded-lg border border-[rgba(0,0,0,0.12)] bg-white px-3 py-2 outline-none focus:border-[#1e3fb0]";
+
+// ─── Position modal ───────────────────────────────────────────────────────────
+
 function PositionModal({
   open,
-  isEditing,
-  form,
-  saving,
+  position,
   onClose,
-  onChange,
-  onSubmit,
+  onSuccess,
 }: Readonly<{
   open: boolean;
-  isEditing: boolean;
-  form: PositionForm;
-  saving: boolean;
+  position: Position | null;
   onClose: () => void;
-  onChange: (field: keyof PositionForm, value: string) => void;
-  onSubmit: () => void;
+  onSuccess: () => void;
 }>) {
-  if (!open) {
-    return null;
-  }
+  const isEditing = position !== null;
 
-  const modalTitle = isEditing ? "Edit Position" : "Add Position";
-  let submitLabel = "Create Position";
-  if (isEditing) {
-    submitLabel = "Save Changes";
-  }
-  if (saving) {
-    submitLabel = "Saving...";
-  }
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<PositionFormValues>({
+    resolver: zodResolver(positionSchema),
+    defaultValues: {
+      title: "",
+      department: "",
+      work_type: 1,
+      employment_type: 1,
+      experience: "",
+      description: "",
+      status: 1,
+    },
+  });
+
+  useEffect(() => {
+    if (!open) return;
+    const values = position
+      ? {
+          title: position.title,
+          department: position.department,
+          work_type: position.workTypeId || 1,
+          employment_type: position.employmentTypeId || 1,
+          experience: position.level,
+          description: position.description,
+          status: position.statusId || 1,
+        }
+      : {
+          title: "",
+          department: "",
+          work_type: 1,
+          employment_type: 1,
+          experience: "",
+          description: "",
+          status: 1,
+        };
+    reset(values);
+  }, [open, position, reset]);
+
+  const onSubmit = async (data: PositionFormValues) => {
+    try {
+      const endpoint = isEditing
+        ? `/api/admin/careers/positions/${position.id}`
+        : "/api/admin/careers/positions";
+      const method = isEditing ? "PUT" : "POST";
+
+      const res = await fetch(endpoint, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const payload: unknown = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        setError("root", {
+          message:
+            isRecord(payload) && typeof payload.message === "string"
+              ? payload.message
+              : "Failed to save position.",
+        });
+        return;
+      }
+
+      onSuccess();
+      onClose();
+    } catch {
+      setError("root", { message: "Could not reach the server." });
+    }
+  };
+
+  if (!open) return null;
 
   return (
     <div
@@ -166,10 +274,12 @@ function PositionModal({
     >
       <div
         className="w-full max-w-xl rounded-2xl bg-white shadow-2xl"
-        onClick={(event) => event.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-[rgba(0,0,0,0.08)] px-6 py-4">
-          <h3 className="text-lg font-semibold text-[#0d1240]">{modalTitle}</h3>
+          <h3 className="text-lg font-semibold text-[#0d1240]">
+            {isEditing ? "Edit Position" : "Add Position"}
+          </h3>
           <button
             type="button"
             onClick={onClose}
@@ -180,96 +290,102 @@ function PositionModal({
           </button>
         </div>
 
-        <div className="grid gap-4 px-6 py-5 sm:grid-cols-2">
-          <label className="flex flex-col gap-1.5 text-sm text-[#374151]">
-            <span>Title</span>
-            <input
-              value={form.title}
-              onChange={(e) => onChange("title", e.target.value)}
-              className="rounded-lg border border-[rgba(0,0,0,0.12)] px-3 py-2 outline-none focus:border-[#1e3fb0]"
-              placeholder="Senior Software Engineer"
-            />
-          </label>
-          <label className="flex flex-col gap-1.5 text-sm text-[#374151]">
-            <span>Department</span>
-            <input
-              value={form.department}
-              onChange={(e) => onChange("department", e.target.value)}
-              className="rounded-lg border border-[rgba(0,0,0,0.12)] px-3 py-2 outline-none focus:border-[#1e3fb0]"
-              placeholder="Engineering"
-            />
-          </label>
-          <label className="flex flex-col gap-1.5 text-sm text-[#374151]">
-            <span>Location</span>
-            <input
-              value={form.location}
-              onChange={(e) => onChange("location", e.target.value)}
-              className="rounded-lg border border-[rgba(0,0,0,0.12)] px-3 py-2 outline-none focus:border-[#1e3fb0]"
-              placeholder="Cairo, Egypt"
-            />
-          </label>
-          <label className="flex flex-col gap-1.5 text-sm text-[#374151]">
-            <span>Work Type</span>
-            <input
-              value={form.workType}
-              onChange={(e) => onChange("workType", e.target.value)}
-              className="rounded-lg border border-[rgba(0,0,0,0.12)] px-3 py-2 outline-none focus:border-[#1e3fb0]"
-              placeholder="Hybrid"
-            />
-          </label>
-          <label className="flex flex-col gap-1.5 text-sm text-[#374151]">
-            <span>Level</span>
-            <input
-              value={form.level}
-              onChange={(e) => onChange("level", e.target.value)}
-              className="rounded-lg border border-[rgba(0,0,0,0.12)] px-3 py-2 outline-none focus:border-[#1e3fb0]"
-              placeholder="Mid-level"
-            />
-          </label>
-          <label className="flex flex-col gap-1.5 text-sm text-[#374151]">
-            <span>Status</span>
-            <select
-              value={form.status}
-              onChange={(e) => onChange("status", e.target.value)}
-              className="rounded-lg border border-[rgba(0,0,0,0.12)] bg-white px-3 py-2 outline-none focus:border-[#1e3fb0]"
-            >
-              <option value="Active">Active</option>
-              <option value="Paused">Paused</option>
-            </select>
-          </label>
-          <label className="col-span-full flex flex-col gap-1.5 text-sm text-[#374151]">
-            <span>Description</span>
-            <textarea
-              value={form.description}
-              onChange={(e) => onChange("description", e.target.value)}
-              className="min-h-24 rounded-lg border border-[rgba(0,0,0,0.12)] px-3 py-2 outline-none focus:border-[#1e3fb0]"
-              placeholder="Write a brief role description..."
-            />
-          </label>
-        </div>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="grid gap-4 px-6 py-5 sm:grid-cols-2">
+            {errors.root?.message && (
+              <div className="col-span-full rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
+                {errors.root.message}
+              </div>
+            )}
 
-        <div className="flex items-center justify-end gap-3 border-t border-[rgba(0,0,0,0.08)] px-6 py-4">
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-lg border border-[rgba(0,0,0,0.12)] px-4 py-2 text-sm font-semibold text-[#374151]"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            disabled={saving}
-            onClick={onSubmit}
-            className="rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
-            style={{ backgroundColor: "#1e3fb0" }}
-          >
-            {submitLabel}
-          </button>
-        </div>
+            <Field label="Title" error={errors.title?.message}>
+              <input
+                {...register("title")}
+                className={inputClass}
+                placeholder="Senior Software Engineer"
+              />
+            </Field>
+
+            <Field label="Department" error={errors.department?.message}>
+              <input
+                {...register("department")}
+                className={inputClass}
+                placeholder="Engineering"
+              />
+            </Field>
+
+            <Field label="Work Type">
+              <select {...register("work_type")} className={selectClass}>
+                {WORK_TYPE_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
+            <Field label="Employment Type">
+              <select {...register("employment_type")} className={selectClass}>
+                {EMPLOYMENT_TYPE_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
+            <Field label="Experience" error={errors.experience?.message}>
+              <input
+                {...register("experience")}
+                className={inputClass}
+                placeholder="3-5 years"
+              />
+            </Field>
+
+            <Field label="Status">
+              <select {...register("status")} className={selectClass}>
+                {STATUS_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
+            <Field label="Description" error={errors.description?.message} fullWidth>
+              <textarea
+                {...register("description")}
+                className={`min-h-24 ${inputClass}`}
+                placeholder="Write a brief role description..."
+              />
+            </Field>
+          </div>
+
+          <div className="flex items-center justify-end gap-3 border-t border-[rgba(0,0,0,0.08)] px-6 py-4">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isSubmitting}
+              className="rounded-lg border border-[rgba(0,0,0,0.12)] px-4 py-2 text-sm font-semibold text-[#374151] disabled:opacity-60"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+              style={{ backgroundColor: "#1e3fb0" }}
+            >
+              {isSubmitting ? "Saving..." : isEditing ? "Save Changes" : "Create Position"}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
 }
+
+// ─── Position card ────────────────────────────────────────────────────────────
 
 function PositionCard({
   position,
@@ -277,8 +393,8 @@ function PositionCard({
   onDelete,
 }: Readonly<{
   position: Position;
-  onEdit: (position: Position) => void;
-  onDelete: (position: Position) => void;
+  onEdit: (p: Position) => void;
+  onDelete: (p: Position) => void;
 }>) {
   const stat = statusStyles[position.status];
   const pct = Math.min(
@@ -347,10 +463,7 @@ function PositionCard({
           className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold"
           style={{ backgroundColor: stat.bg, color: stat.text }}
         >
-          <span
-            className="h-1.5 w-1.5 rounded-full"
-            style={{ backgroundColor: stat.dot }}
-          />
+          <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: stat.dot }} />
           {position.status}
         </span>
         <span className="text-xs text-[#9ca3af]">{position.postedDate}</span>
@@ -359,58 +472,47 @@ function PositionCard({
   );
 }
 
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
 export default function PositionsPage() {
   const [search, setSearch] = useState("");
   const [department, setDepartment] = useState("All Departments");
-  const [status, setStatus] = useState("All Status");
+  const [statusFilter, setStatusFilter] = useState("All Status");
   const [positions, setPositions] = useState<Position[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [modalPosition, setModalPosition] = useState<Position | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingPosition, setEditingPosition] = useState<Position | null>(null);
-  const [form, setForm] = useState<PositionForm>(defaultForm);
-  const [saving, setSaving] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [positionToDelete, setPositionToDelete] = useState<Position | null>(
-    null,
-  );
+
+  const [positionToDelete, setPositionToDelete] = useState<Position | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   const loadPositions = async () => {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/admin/careers/positions", {
-        cache: "no-store",
-      });
+      const res = await fetch("/api/admin/careers/positions", { cache: "no-store" });
       const payload: unknown = await res.json().catch(() => null);
 
       if (!res.ok) {
-        const message =
+        throw new Error(
           isRecord(payload) && typeof payload.message === "string"
             ? payload.message
-            : "Failed to load positions.";
-        throw new Error(message);
+            : "Failed to load positions.",
+        );
       }
 
       let rawList: unknown[] = [];
-      if (isRecord(payload) && Array.isArray(payload.data)) {
-        rawList = payload.data;
-      } else if (Array.isArray(payload)) {
-        rawList = payload;
-      }
+      if (isRecord(payload) && Array.isArray(payload.data)) rawList = payload.data;
+      else if (Array.isArray(payload)) rawList = payload;
 
-      const normalized = rawList
-        .map(normalizePosition)
-        .filter((item): item is Position => item !== null);
-      setPositions(normalized);
-    } catch (requestError) {
-      setError(
-        requestError instanceof Error
-          ? requestError.message
-          : "Failed to load positions.",
+      setPositions(
+        rawList.map(normalizePosition).filter((p): p is Position => p !== null),
       );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load positions.");
       setPositions([]);
     } finally {
       setLoading(false);
@@ -422,165 +524,46 @@ export default function PositionsPage() {
   }, []);
 
   const departments = useMemo(
-    () =>
-      Array.from(
-        new Set(positions.map((positionItem) => positionItem.department)),
-      ).filter(Boolean),
+    () => Array.from(new Set(positions.map((p) => p.department))).filter(Boolean),
     [positions],
   );
 
-  const filtered = positions.filter((positionItem) => {
-    const matchSearch = positionItem.title
-      .toLowerCase()
-      .includes(search.toLowerCase());
-    const matchDept =
-      department === "All Departments" ||
-      positionItem.department === department;
-    const matchStatus =
-      status === "All Status" || positionItem.status === status;
+  const filtered = positions.filter((p) => {
+    const matchSearch = p.title.toLowerCase().includes(search.toLowerCase());
+    const matchDept = department === "All Departments" || p.department === department;
+    const matchStatus = statusFilter === "All Status" || p.status === statusFilter;
     return matchSearch && matchDept && matchStatus;
   });
 
-  const openCreateModal = () => {
-    setEditingPosition(null);
-    setForm(defaultForm);
-    setIsModalOpen(true);
-  };
+  const activeRolesCount = positions.filter((p) => p.status === "Active").length;
 
-  const openEditModal = (positionItem: Position) => {
-    setEditingPosition(positionItem);
-    setForm({
-      title: positionItem.title,
-      department: positionItem.department,
-      location: positionItem.location,
-      workType: positionItem.workType,
-      level: positionItem.level,
-      status: positionItem.status,
-      description: "",
-    });
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    if (!saving) {
-      setIsModalOpen(false);
-    }
-  };
-
-  const handleFormChange = (field: keyof PositionForm, value: string) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleSave = async () => {
-    if (!form.title.trim() || !form.department.trim()) {
-      setError("Title and department are required.");
-      return;
-    }
-
-    setSaving(true);
-    setError("");
-
-    const body = {
-      title: form.title.trim(),
-      department: form.department.trim(),
-      location: form.location.trim(),
-      work_type: form.workType.trim(),
-      employment_type: form.level.trim(),
-      experience: form.level.trim(),
-      status: form.status,
-      description: form.description.trim(),
-    };
-
+  const handleConfirmDelete = async () => {
+    if (!positionToDelete) return;
+    setDeleting(true);
+    setDeleteError("");
     try {
-      const endpoint = editingPosition
-        ? `/api/admin/careers/positions/${editingPosition.id}`
-        : "/api/admin/careers/positions";
-      const method = editingPosition ? "PUT" : "POST";
-
-      const res = await fetch(endpoint, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+      const res = await fetch(`/api/admin/careers/positions/${positionToDelete.id}`, {
+        method: "DELETE",
       });
       const payload: unknown = await res.json().catch(() => null);
 
       if (!res.ok) {
-        const message =
+        setDeleteError(
           isRecord(payload) && typeof payload.message === "string"
             ? payload.message
-            : "Failed to save position.";
-        throw new Error(message);
+            : "Failed to delete position.",
+        );
+        return;
       }
 
-      setIsModalOpen(false);
-      setEditingPosition(null);
-      setForm(defaultForm);
-      console.log("Saved position:", payload);
-      await loadPositions();
-    } catch (requestError) {
-      setError(
-        requestError instanceof Error
-          ? requestError.message
-          : "Failed to save position.",
-      );
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const openDeleteModal = (positionItem: Position) => {
-    setPositionToDelete(positionItem);
-    setIsDeleteModalOpen(true);
-  };
-
-  const closeDeleteModal = () => {
-    if (!deleting) {
-      setIsDeleteModalOpen(false);
       setPositionToDelete(null);
-    }
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!positionToDelete) {
-      return;
-    }
-
-    setDeleting(true);
-    setError("");
-    try {
-      const res = await fetch(
-        `/api/admin/careers/positions/${positionToDelete.id}`,
-        {
-          method: "DELETE",
-        },
-      );
-      const payload: unknown = await res.json().catch(() => null);
-
-      if (!res.ok) {
-        const message =
-          isRecord(payload) && typeof payload.message === "string"
-            ? payload.message
-            : "Failed to delete position.";
-        throw new Error(message);
-      }
-
       await loadPositions();
-      setIsDeleteModalOpen(false);
-      setPositionToDelete(null);
-    } catch (requestError) {
-      setError(
-        requestError instanceof Error
-          ? requestError.message
-          : "Failed to delete position.",
-      );
+    } catch {
+      setDeleteError("Could not reach the server.");
     } finally {
       setDeleting(false);
     }
   };
-
-  const activeRolesCount = positions.filter(
-    (positionItem) => positionItem.status === "Active",
-  ).length;
 
   let positionsContent: React.ReactNode;
   if (loading) {
@@ -592,12 +575,18 @@ export default function PositionsPage() {
   } else if (filtered.length > 0) {
     positionsContent = (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((positionItem) => (
+        {filtered.map((p) => (
           <PositionCard
-            key={positionItem.id}
-            position={positionItem}
-            onEdit={openEditModal}
-            onDelete={openDeleteModal}
+            key={p.id}
+            position={p}
+            onEdit={(pos) => {
+              setModalPosition(pos);
+              setIsModalOpen(true);
+            }}
+            onDelete={(pos) => {
+              setDeleteError("");
+              setPositionToDelete(pos);
+            }}
           />
         ))}
       </div>
@@ -606,9 +595,7 @@ export default function PositionsPage() {
     positionsContent = (
       <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-xl border border-[rgba(0,0,0,0.06)] bg-white py-20 text-center shadow-sm">
         <Briefcase size={36} className="text-[#cbd5e1]" />
-        <p className="text-sm font-medium text-[#6b7280]">
-          No positions match your filters
-        </p>
+        <p className="text-sm font-medium text-[#6b7280]">No positions match your filters</p>
       </div>
     );
   }
@@ -621,18 +608,17 @@ export default function PositionsPage() {
         <main className="flex flex-1 flex-col gap-6 p-4 sm:p-6 lg:p-8">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h2 className="text-lg font-bold text-[#0d1240]">
-                Open Positions
-              </h2>
-              <p className="text-sm text-[#6b7280]">
-                {activeRolesCount} active roles
-              </p>
+              <h2 className="text-lg font-bold text-[#0d1240]">Open Positions</h2>
+              <p className="text-sm text-[#6b7280]">{activeRolesCount} active roles</p>
             </div>
             <button
               type="button"
               className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-white"
               style={{ backgroundColor: "#1e3fb0" }}
-              onClick={openCreateModal}
+              onClick={() => {
+                setModalPosition(null);
+                setIsModalOpen(true);
+              }}
             >
               <Plus size={15} />
               Add Position
@@ -667,8 +653,8 @@ export default function PositionsPage() {
                 className="appearance-none rounded-lg border border-[rgba(0,0,0,0.1)] bg-[#f9fafb] py-2 pl-3 pr-8 text-sm text-[#374151] outline-none focus:border-[#1e3fb0]"
               >
                 <option>All Departments</option>
-                {departments.map((departmentName) => (
-                  <option key={departmentName}>{departmentName}</option>
+                {departments.map((d) => (
+                  <option key={d}>{d}</option>
                 ))}
               </select>
               <ChevronDown
@@ -679,8 +665,8 @@ export default function PositionsPage() {
 
             <div className="relative w-full sm:w-auto">
               <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
                 className="appearance-none rounded-lg border border-[rgba(0,0,0,0.1)] bg-[#f9fafb] py-2 pl-3 pr-8 text-sm text-[#374151] outline-none focus:border-[#1e3fb0]"
               >
                 <option>All Status</option>
@@ -700,31 +686,27 @@ export default function PositionsPage() {
 
       <PositionModal
         open={isModalOpen}
-        isEditing={Boolean(editingPosition)}
-        form={form}
-        saving={saving}
-        onClose={closeModal}
-        onChange={handleFormChange}
-        onSubmit={handleSave}
+        position={modalPosition}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={() => void loadPositions()}
       />
 
-      {isDeleteModalOpen && positionToDelete && (
+      {positionToDelete && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4"
-          onClick={closeDeleteModal}
+          onClick={() => { if (!deleting) setPositionToDelete(null); }}
         >
           <div
             className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-[#0d1240]">
-                Delete position
-              </h3>
+              <h3 className="text-lg font-semibold text-[#0d1240]">Delete position</h3>
               <button
                 type="button"
-                onClick={closeDeleteModal}
-                className="rounded-md p-1.5 text-[#6b7280] hover:bg-[#f3f4f6]"
+                onClick={() => setPositionToDelete(null)}
+                disabled={deleting}
+                className="rounded-md p-1.5 text-[#6b7280] hover:bg-[#f3f4f6] disabled:opacity-60"
                 aria-label="Close"
               >
                 <X size={16} />
@@ -732,17 +714,18 @@ export default function PositionsPage() {
             </div>
             <p className="mt-3 text-sm text-[#4b5563]">
               Are you sure you want to delete{" "}
-              <span className="font-semibold">
-                &quot;{positionToDelete.title}&quot;
-              </span>
-              ? This action cannot be undone.
+              <span className="font-semibold">&quot;{positionToDelete.title}&quot;</span>? This
+              action cannot be undone.
             </p>
+            {deleteError && (
+              <p className="mt-2 text-sm text-red-600">{deleteError}</p>
+            )}
             <div className="mt-5 flex justify-end gap-3">
               <button
                 type="button"
-                onClick={closeDeleteModal}
-                className="rounded-lg border border-[rgba(0,0,0,0.12)] px-4 py-2 text-sm font-semibold text-[#374151]"
+                onClick={() => setPositionToDelete(null)}
                 disabled={deleting}
+                className="rounded-lg border border-[rgba(0,0,0,0.12)] px-4 py-2 text-sm font-semibold text-[#374151] disabled:opacity-60"
               >
                 Cancel
               </button>

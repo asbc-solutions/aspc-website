@@ -70,8 +70,21 @@ export async function POST(request: Request) {
       headers,
       body: JSON.stringify(body),
     });
-    const payload: unknown = await res.json().catch(() => null);
-    return NextResponse.json(payload ?? { message: "Invalid upstream response." }, { status: res.status });
+
+    const text = await res.text().catch(() => "");
+    let payload: unknown = null;
+    try {
+      payload = text ? JSON.parse(text) : null;
+    } catch {
+      // non-JSON body — surface the raw text as the error message
+    }
+
+    if (payload === null) {
+      const message = text.trim() || (res.ok ? "Position created." : "Request failed.");
+      return NextResponse.json({ message }, { status: res.ok ? 200 : res.status });
+    }
+
+    return NextResponse.json(payload, { status: res.status });
   } catch {
     return NextResponse.json(
       { message: "Could not reach the backend server." },

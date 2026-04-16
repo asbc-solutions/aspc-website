@@ -56,23 +56,17 @@ export async function PUT(request: Request, context: Context) {
       body: JSON.stringify(body),
     });
 
-    const payload: unknown = await res
-      .json()
-      .catch(() => null);
-
-    if (payload === null && res.ok) {
-      // Upstream returned a successful status with no JSON body
-      return NextResponse.json(
-        { status: true, message: "Position updated successfully." },
-        { status: res.status },
-      );
+    const text = await res.text().catch(() => "");
+    let payload: unknown = null;
+    try {
+      payload = text ? JSON.parse(text) : null;
+    } catch {
+      // non-JSON body — surface the raw text as the error message
     }
 
     if (payload === null) {
-      return NextResponse.json(
-        { message: "Invalid upstream response." },
-        { status: res.status },
-      );
+      const message = text.trim() || (res.ok ? "Position updated successfully." : "Request failed.");
+      return NextResponse.json({ message }, { status: res.ok ? 200 : res.status });
     }
 
     return NextResponse.json(payload, { status: res.status });
@@ -105,11 +99,33 @@ export async function DELETE(_: Request, context: Context) {
       method: "DELETE",
       headers,
     });
-    const payload: unknown = await res.json().catch(() => null);
-    return NextResponse.json(
-      payload ?? { message: "Invalid upstream response." },
-      { status: res.status },
-    );
+
+    // 204 No Content is a valid success — return 200 with a body so the client can parse it
+    if (res.status === 204 || res.status === 200) {
+      const text = await res.text().catch(() => "");
+      let payload: unknown = null;
+      try {
+        payload = text ? JSON.parse(text) : null;
+      } catch {
+        // no-op
+      }
+      return NextResponse.json(
+        payload ?? { message: "Position deleted successfully." },
+        { status: 200 },
+      );
+    }
+
+    const text = await res.text().catch(() => "");
+    let payload: unknown = null;
+    try {
+      payload = text ? JSON.parse(text) : null;
+    } catch {
+      // non-JSON error body
+    }
+    const message = (payload && typeof payload === "object" && "message" in payload)
+      ? (payload as Record<string, unknown>).message
+      : text.trim() || "Failed to delete position.";
+    return NextResponse.json({ message }, { status: res.status });
   } catch {
     return NextResponse.json(
       { message: "Could not reach the backend server." },
