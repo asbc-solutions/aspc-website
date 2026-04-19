@@ -122,7 +122,7 @@ export default function SocialMedia() {
               <Icon
                 size={28}
                 style={{ color }}
-                className="group-hover:!text-white transition-colors duration-300"
+                className="group-hover:text-white! transition-colors duration-300"
               />
             </span>
             <span className="text-sm font-semibold text-slate-700 group-hover:text-white transition-colors duration-300">
