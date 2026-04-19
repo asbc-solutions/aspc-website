@@ -1,9 +1,7 @@
 import OurStory from "@/app/_components/about/OurStory";
-import OurTeam from "@/app/_components/about/OurTeam";
-import OurValue from "@/app/_components/about/OurValue";
 import OurVision from "@/app/_components/about/OurVision";
 import FadeInSection from "@/app/_components/animation/FadeInSection";
-import ReadyTo from "@/app/_components/home/ReadyTo";
+import SocialMedia from "@/app/_components/event/SocialMedia";
 import HeadingSection from "@/app/shared/HeadingSection";
 import { Lightbulb, Target } from "lucide-react";
 import Wave from "react-wavify";
@@ -11,7 +9,7 @@ import Wave from "react-wavify";
 const page = () => {
   return (
     <>
-      <HeadingSection textHeading="about ASBC" />
+      <HeadingSection textHeading="welcome to ASBC" />
       <Wave
         fill="#1B2472"
         paused={false}
@@ -30,7 +28,7 @@ const page = () => {
 
       {/* our vision component */}
       <FadeInSection>
-        <div className="flex items-center justify-center gap-5 container mx-auto pb-20 flex-col lg:flex-row">
+        <div className="container mx-auto flex items-center justify-center gap-5  px-4 pb-16 md:pb-20 flex-col lg:flex-row">
           <OurVision
             icon={<Target />}
             heading="Our mission"
@@ -46,31 +44,11 @@ const page = () => {
         </div>
       </FadeInSection>
 
-      {/* our story */}
+      {/* social media links section */}
+      <SocialMedia />
+
       <FadeInSection>
         <OurStory />
-      </FadeInSection>
-
-      {/* out team */}
-      <FadeInSection>
-        <OurTeam />
-      </FadeInSection>
-
-      {/* out value */}
-      <FadeInSection>
-        <OurValue />
-      </FadeInSection>
-
-      <FadeInSection>
-        <ReadyTo
-          heading="Ready to Work With Us?"
-          paragraph="Let's build something great together. Reach out to discuss how we can help transform your business"
-          btnTextOne="Contact Us"
-          btnTextTwo="Join Our Team"
-          LinkOne="contact-us"
-          LinkTwo="careers"
-          className="py-20"
-        />
       </FadeInSection>
     </>
   );

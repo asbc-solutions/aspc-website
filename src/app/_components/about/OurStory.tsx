@@ -33,7 +33,7 @@ const timelineData = [
 
 const OurStory = () => {
   return (
-    <div className="container py-12 md:py-20 mx-auto bg-main dark:bg-slate-950 flex flex-col items-center justify-center gap-8 md:gap-10 px-4">
+    <div className="@container py-12 md:py-20 mx-auto bg-main dark:bg-slate-950 flex flex-col items-center justify-center gap-8 md:gap-10 px-4">
       <div className="flex flex-col items-center justify-center gap-3 text-center">
         <p className="uppercase text-primary dark:text-blue-400 text-xs font-bold">
           Our Journey
