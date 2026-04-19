@@ -47,9 +47,6 @@ const page = () => {
       {/* social media links section */}
       <SocialMedia />
 
-      <FadeInSection>
-        <OurStory />
-      </FadeInSection>
     </>
   );
 };

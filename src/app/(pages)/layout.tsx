@@ -28,8 +28,7 @@ export default function PagesLayout({
   return (
     <ThemeProvider
       attribute="class"
-      defaultTheme="system"
-      enableSystem
+      defaultTheme="light"
       disableTransitionOnChange
     >
       <div className="relative z-10">
