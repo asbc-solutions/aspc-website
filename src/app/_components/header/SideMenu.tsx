@@ -25,6 +25,8 @@ export function SideMenu() {
     { label: "About", href: "/about" },
     { label: "Portfolio", href: "/portfolio" },
     { label: "Careers", href: "/careers" },
+    // i will remove you again
+    { label: "event", href: "/event" },
     { label: "Contact Us", href: "/contact-us" },
   ];
 
@@ -42,7 +44,7 @@ export function SideMenu() {
         duration: 0.38,
         ease: "power3.out",
         clearProps: "opacity,visibility,transform",
-      }
+      },
     );
 
     timeline.fromTo(
@@ -56,7 +58,7 @@ export function SideMenu() {
         ease: "power2.out",
         clearProps: "opacity,visibility,transform",
       },
-      "-=0.22"
+      "-=0.22",
     );
   };
 
