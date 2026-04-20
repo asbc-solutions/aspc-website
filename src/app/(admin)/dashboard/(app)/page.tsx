@@ -1,121 +1,132 @@
-"use client";
-
+import Link from "next/link";
 import { Briefcase, Clock, FileText, UserCheck } from "lucide-react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-} from "recharts";
-
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import type { ChartConfig } from "@/components/ui/chart";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import { getDashboardStats, type AdminApplication } from "@/app/api/admin.api";
+import { DashboardBarChart } from "./DashboardBarChart";
 
-// ── data ────────────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-const stats = [
-  {
-    label: "Open Positions",
-    value: 4,
-    badge: "+2 this month",
-    badgeColor: "#dbeafe",
-    badgeText: "#1d4ed8",
-    icon: Briefcase,
-    iconBg: "#eff6ff",
-    iconColor: "#3b82f6",
-    accent: "#3b82f6",
-  },
-  {
-    label: "Total Applications",
-    value: 12,
-    badge: "+7 this week",
-    badgeColor: "#dbeafe",
-    badgeText: "#1d4ed8",
-    icon: FileText,
-    iconBg: "#eff6ff",
-    iconColor: "#3b82f6",
-    accent: "#3b82f6",
-  },
-  {
-    label: "Shortlisted",
-    value: 14,
-    badge: "6 new",
-    badgeColor: "#dcfce7",
-    badgeText: "#15803d",
-    icon: UserCheck,
-    iconBg: "#f0fdf4",
-    iconColor: "#22c55e",
-    accent: "#22c55e",
-  },
-  {
-    label: "Interviews Scheduled",
-    value: 3,
-    badge: "-1 this week",
-    badgeColor: "#fee2e2",
-    badgeText: "#b91c1c",
-    icon: Clock,
-    iconBg: "#fff7ed",
-    iconColor: "#f97316",
-    accent: "#f59e0b",
-  },
-];
+function getName(app: AdminApplication): string {
+  const a = app.answers.find((x) => x.form_field_label === "Full Name");
+  if (!a) return "Unknown";
+  return Array.isArray(a.value) ? a.value.join(" ") : String(a.value);
+}
 
-const barData = [
-  { week: "Week 1", applications: 8 },
-  { week: "Week 2", applications: 15 },
-  { week: "Week 3", applications: 18 },
-  { week: "Week 4", applications: 13 },
-];
+function getInitials(name: string): string {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? "")
+    .join("");
+}
 
-const chartConfig: ChartConfig = {
-  applications: { label: "Applications", color: "#1e3fb0" },
+function formatDate(iso: string): string {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime())
+    ? iso
+    : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
+
+function getWeeklyData(applications: AdminApplication[]) {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth();
+  const weeks = [
+    { label: "Week 1", start: new Date(y, m, 1),  end: new Date(y, m, 8) },
+    { label: "Week 2", start: new Date(y, m, 8),  end: new Date(y, m, 15) },
+    { label: "Week 3", start: new Date(y, m, 15), end: new Date(y, m, 22) },
+    { label: "Week 4", start: new Date(y, m, 22), end: new Date(y, m + 1, 1) },
+  ];
+  return weeks.map(({ label, start, end }) => ({
+    week: label,
+    applications: applications.filter((a) => {
+      const d = new Date(a.created_at);
+      return d >= start && d < end;
+    }).length,
+  }));
+}
+
+// ── Status config ─────────────────────────────────────────────────────────────
+
+const STATUS_COLORS: Record<string, { bg: string; dot: string; text: string }> = {
+  Pending:     { bg: "#f0fdfa", dot: "#14b8a6", text: "#0f766e" },
+  Reviewed:    { bg: "#eff6ff", dot: "#3b82f6", text: "#1d4ed8" },
+  Interview:   { bg: "#ede9fe", dot: "#a855f7", text: "#7e22ce" },
+  Shortlisted: { bg: "#dcfce7", dot: "#22c55e", text: "#15803d" },
+  Rejected:    { bg: "#fee2e2", dot: "#ef4444", text: "#dc2626" },
 };
 
-const funnel = [
-  { label: "Applied", count: 24, max: 24, color: "#1e3fb0" },
-  { label: "Reviewed", count: 18, max: 24, color: "#1e3fb0" },
-  { label: "Shortlisted", count: 14, max: 24, color: "#cbd5e1" },
-  { label: "Interviewed", count: 3, max: 24, color: "#22c55e" },
-];
+const DEFAULT_STATUS = { bg: "#f1f5f9", dot: "#94a3b8", text: "#475569" };
 
-const recentApplicants = [
-  {
-    initials: "AH",
-    name: "Ahmed Hassan",
-    position: "Senior Software Engineer",
-    status: "Shortlisted",
-    applied: "7 Apr 2026",
-    score: 83,
-  },
-  {
-    initials: "LA",
-    name: "Lina Adel",
-    position: "Product Designer",
-    status: "Shortlisted",
-    applied: "3 Apr 2026",
-    score: 84,
-  },
-  {
-    initials: "KS",
-    name: "Karim Saleh",
-    position: "Project Manager",
-    status: "Shortlisted",
-    applied: "4 Apr 2026",
-    score: 82,
-  },
-];
+const AVATAR_COLORS = ["#1e3fb0", "#7c3aed", "#15803d", "#b45309", "#0891b2", "#be123c"];
 
-const statusColors: Record<string, { bg: string; dot: string; text: string }> = {
-  Shortlisted: { bg: "#f0fdf4", dot: "#22c55e", text: "#15803d" },
-  Reviewed: { bg: "#eff6ff", dot: "#3b82f6", text: "#1d4ed8" },
-  Interviewed: { bg: "#faf5ff", dot: "#a855f7", text: "#7e22ce" },
-};
+function avatarColor(name: string): string {
+  return AVATAR_COLORS[(name.charCodeAt(0) ?? 0) % AVATAR_COLORS.length];
+}
 
-// ── component ────────────────────────────────────────────────────────────────
+// ── Component ─────────────────────────────────────────────────────────────────
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  let openPositions = 0;
+  let totalApplications = 0;
+  let shortlisted = 0;
+  let interviewed = 0;
+  let applications: AdminApplication[] = [];
+
+  try {
+    ({ openPositions, totalApplications, shortlisted, interviewed, applications } =
+      await getDashboardStats());
+  } catch {
+    // show zeros if API unavailable
+  }
+
+  const reviewed = applications.filter((a) => a.status.value >= 2).length;
+  const barData = getWeeklyData(applications);
+
+  const recentApplicants = [...applications]
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 3);
+
+  const funnel = [
+    { label: "Applied",     count: totalApplications, color: "#1e3fb0" },
+    { label: "Reviewed",    count: reviewed,           color: "#1e3fb0" },
+    { label: "Shortlisted", count: shortlisted,        color: "#cbd5e1" },
+    { label: "Interviewed", count: interviewed,        color: "#22c55e" },
+  ];
+
+  const statsCards = [
+    {
+      label: "Open Positions",
+      value: openPositions,
+      badge: `${openPositions} active`,
+      badgeColor: "#dbeafe", badgeText: "#1d4ed8",
+      icon: Briefcase, iconBg: "#eff6ff", iconColor: "#3b82f6", accent: "#3b82f6",
+    },
+    {
+      label: "Total Applications",
+      value: totalApplications,
+      badge: `${totalApplications} total`,
+      badgeColor: "#dbeafe", badgeText: "#1d4ed8",
+      icon: FileText, iconBg: "#eff6ff", iconColor: "#3b82f6", accent: "#3b82f6",
+    },
+    {
+      label: "Shortlisted",
+      value: shortlisted,
+      badge: `${shortlisted} candidates`,
+      badgeColor: "#dcfce7", badgeText: "#15803d",
+      icon: UserCheck, iconBg: "#f0fdf4", iconColor: "#22c55e", accent: "#22c55e",
+    },
+    {
+      label: "Interviews Scheduled",
+      value: interviewed,
+      badge: `${interviewed} scheduled`,
+      badgeColor: interviewed === 0 ? "#f1f5f9" : "#fee2e2",
+      badgeText: interviewed === 0 ? "#6b7280" : "#b91c1c",
+      icon: Clock, iconBg: "#fff7ed", iconColor: "#f97316", accent: "#f59e0b",
+    },
+  ];
+
   return (
     <div className="flex flex-1 flex-col bg-[#f5f7ff]">
       <AdminPageHeader title="Dashboard Overview" />
@@ -123,12 +134,11 @@ export default function DashboardPage() {
       <main className="flex flex-1 flex-col gap-6 p-4 sm:p-6 lg:p-8">
         {/* Stat cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {stats.map(({ label, value, badge, badgeColor, badgeText, icon: Icon, iconBg, iconColor, accent }) => (
+          {statsCards.map(({ label, value, badge, badgeColor, badgeText, icon: Icon, iconBg, iconColor, accent }) => (
             <div
               key={label}
               className="relative overflow-hidden rounded-xl border border-[rgba(0,0,0,0.06)] bg-white pt-1 shadow-sm"
             >
-              {/* top accent bar */}
               <div className="h-1 w-full" style={{ backgroundColor: accent }} />
               <div className="p-5">
                 <div className="flex items-start justify-between">
@@ -159,27 +169,14 @@ export default function DashboardPage() {
             <h2 className="mb-4 text-base font-semibold text-[#0d1240]">
               Applications This Month
             </h2>
-            <ChartContainer config={chartConfig} className="h-52 w-full">
-              <BarChart data={barData} barSize={60}>
-                <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis
-                  dataKey="week"
-                  tickLine={false}
-                  axisLine={false}
-                  tick={{ fontSize: 12, fill: "#9ca3af" }}
-                />
-                <YAxis hide />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="applications" fill="#1e3fb0" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ChartContainer>
+            <DashboardBarChart data={barData} />
           </div>
 
           {/* Pipeline funnel */}
           <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-6 shadow-sm">
             <h2 className="mb-5 text-base font-semibold text-[#0d1240]">Pipeline Funnel</h2>
             <div className="flex flex-col gap-4">
-              {funnel.map(({ label, count, max, color }) => (
+              {funnel.map(({ label, count, color }) => (
                 <div key={label}>
                   <div className="mb-1.5 flex items-center justify-between text-sm">
                     <span className="text-[#374151]">{label}</span>
@@ -189,7 +186,9 @@ export default function DashboardPage() {
                     <div
                       className="h-2 rounded-full transition-all"
                       style={{
-                        width: `${(count / max) * 100}%`,
+                        width: totalApplications > 0
+                          ? `${(count / totalApplications) * 100}%`
+                          : "0%",
                         backgroundColor: color,
                       }}
                     />
@@ -207,92 +206,79 @@ export default function DashboardPage() {
               <h2 className="text-base font-semibold text-[#0d1240]">Recent Applications</h2>
               <p className="text-xs text-[#6b7280]">Latest submissions across all positions</p>
             </div>
-            <button
-              type="button"
+            <Link
+              href="/dashboard/applications"
               className="rounded-lg border border-[rgba(0,0,0,0.12)] px-4 py-1.5 text-sm font-medium text-[#374151] hover:bg-gray-50"
             >
               View All
-            </button>
+            </Link>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="min-w-[680px] w-full text-sm">
-            <thead>
-              <tr className="border-b border-[rgba(0,0,0,0.06)] bg-[#f9fafb]">
-                {["Applicant", "Position", "Status", "Applied", "Score"].map((col) => (
-                  <th
-                    key={col}
-                    className="px-6 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[#9ca3af]"
-                  >
-                    {col}
-                  </th>
-                ))}
-                <th className="px-6 py-3" />
-              </tr>
-            </thead>
-            <tbody>
-              {recentApplicants.map(({ initials, name, position, status, applied, score }) => {
-                const s = statusColors[status] ?? statusColors["Reviewed"];
-                return (
-                  <tr
-                    key={name}
-                    className="border-b border-[rgba(0,0,0,0.04)] last:border-0 hover:bg-[#fafbff]"
-                  >
-                    {/* Applicant */}
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
-                          style={{ backgroundColor: "#1e3fb0" }}
-                        >
-                          {initials}
-                        </div>
-                        <span className="font-medium text-[#0d1240]">{name}</span>
-                      </div>
-                    </td>
-                    {/* Position */}
-                    <td className="px-6 py-4 text-[#6b7280]">{position}</td>
-                    {/* Status */}
-                    <td className="px-6 py-4">
-                      <span
-                        className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
-                        style={{ backgroundColor: s.bg, color: s.text }}
-                      >
-                        <span
-                          className="h-1.5 w-1.5 rounded-full"
-                          style={{ backgroundColor: s.dot }}
-                        />
-                        {status}
-                      </span>
-                    </td>
-                    {/* Applied */}
-                    <td className="px-6 py-4 text-[#6b7280]">{applied}</td>
-                    {/* Score */}
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="h-1.5 w-24 rounded-full bg-[#f1f5f9]">
-                          <div
-                            className="h-1.5 rounded-full"
-                            style={{ width: `${score}%`, backgroundColor: "#1e3fb0" }}
-                          />
-                        </div>
-                        <span className="text-xs font-semibold text-[#0d1240]">{score}%</span>
-                      </div>
-                    </td>
-                    {/* Action */}
-                    <td className="px-6 py-4">
-                      <button
-                        type="button"
-                        className="text-[#9ca3af] hover:text-[#6b7280]"
-                        aria-label="View applicant"
-                      >
-                        ···
-                      </button>
+            <table className="min-w-145 w-full text-sm">
+              <thead>
+                <tr className="border-b border-[rgba(0,0,0,0.06)] bg-[#f9fafb]">
+                  {["Applicant", "Position", "Status", "Applied"].map((col) => (
+                    <th
+                      key={col}
+                      className="px-6 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[#9ca3af]"
+                    >
+                      {col}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {recentApplicants.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={4}
+                      className="px-6 py-10 text-center text-sm text-[#9ca3af]"
+                    >
+                      No applications yet.
                     </td>
                   </tr>
-                );
-              })}
-            </tbody>
+                ) : (
+                  recentApplicants.map((app) => {
+                    const name = getName(app);
+                    const abbr = getInitials(name);
+                    const color = avatarColor(name);
+                    const s = STATUS_COLORS[app.status.label] ?? DEFAULT_STATUS;
+                    return (
+                      <tr
+                        key={app.id}
+                        className="border-b border-[rgba(0,0,0,0.04)] last:border-0 hover:bg-[#fafbff]"
+                      >
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+                              style={{ backgroundColor: color }}
+                            >
+                              {abbr}
+                            </div>
+                            <span className="font-medium text-[#0d1240]">{name}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-[#6b7280]">{app.position?.title ?? "—"}</td>
+                        <td className="px-6 py-4">
+                          <span
+                            className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
+                            style={{ backgroundColor: s.bg, color: s.text }}
+                          >
+                            <span
+                              className="h-1.5 w-1.5 rounded-full"
+                              style={{ backgroundColor: s.dot }}
+                            />
+                            {app.status.label}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-[#6b7280]">{formatDate(app.created_at)}</td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
             </table>
           </div>
         </div>

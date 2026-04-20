@@ -1,8 +1,28 @@
+import { getAdminPositions } from "@/app/api/admin.api";
 import { AdminSessionNav } from "./AdminSessionNav";
 import { SidebarNav } from "./SidebarNav";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
 
-export default function AdminSidebarDefault() {
+export default async function AdminSidebarDefault() {
+  let positionsCount: number | undefined;
+  let applicationsCount: number | undefined;
+
+  try {
+    const positions = await getAdminPositions();
+    positionsCount = positions.filter(
+      (p) => p.status.label.toLowerCase() === "active",
+    ).length;
+    const appsSum = positions.reduce(
+      (sum, p) => sum + (p.applications_count ?? 0),
+      0,
+    );
+    // Only show badge if the field is present in the API response
+    const hasField = positions.some((p) => p.applications_count !== undefined);
+    if (hasField) applicationsCount = appsSum;
+  } catch {
+    // leave as undefined — badges simply won't render
+  }
+
   return (
     <Sidebar className="border-r-0" style={{ backgroundColor: "#071848" }}>
       {/* Logo + company */}
@@ -24,7 +44,7 @@ export default function AdminSidebarDefault() {
 
       {/* Navigation (client — needs usePathname for active state) */}
       <SidebarContent>
-        <SidebarNav />
+        <SidebarNav counts={{ positions: positionsCount, applications: applicationsCount }} />
       </SidebarContent>
 
       {/* Footer — user info + sign out */}

@@ -7,6 +7,7 @@ export type JobPosition = {
   status: { value: number; label: string };
   experience: string;
   description: string;
+  applications_count?: number;
   created_at: string;
   updated_at: string;
 };

@@ -72,6 +72,47 @@ export const getPositionApplications = async (
   return payload.data ?? [];
 };
 
+// ── Dashboard stats ───────────────────────────────────────────────────────────
+
+export type DashboardStats = {
+  openPositions: number;
+  totalApplications: number;
+  shortlisted: number;
+  interviewed: number;
+  applications: AdminApplication[];
+};
+
+export const getDashboardStats = async (): Promise<DashboardStats> => {
+  const positions = await getAdminPositions();
+  const openPositions = positions.filter(
+    (p) => p.status.label.toLowerCase() === "active",
+  ).length;
+
+  const results = await Promise.allSettled(
+    positions.map((p) => getPositionApplications(p.id)),
+  );
+
+  const applications = results.flatMap((r) =>
+    r.status === "fulfilled" ? r.value : [],
+  );
+
+  const shortlisted = applications.filter(
+    (a) => a.status.label === "Shortlisted",
+  ).length;
+
+  const interviewed = applications.filter(
+    (a) => a.status.label === "Interview",
+  ).length;
+
+  return {
+    openPositions,
+    totalApplications: applications.length,
+    shortlisted,
+    interviewed,
+    applications,
+  };
+};
+
 /**
  * GET /careers/admin/applications/{id}
  */

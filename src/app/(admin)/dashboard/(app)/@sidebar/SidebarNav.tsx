@@ -11,25 +11,33 @@ type NavItem = {
   badge?: number;
 };
 
-const navSections: { label: string; items: NavItem[] }[] = [
-  {
-    label: "Overview",
-    items: [
-      { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    ],
-  },
-  {
-    label: "Recruitment",
-    items: [
-      { href: "/dashboard/positions", icon: Briefcase, label: "Open Positions", badge: 4 },
-      { href: "/dashboard/applications", icon: FileText, label: "All Applications", badge: 12 },
-      { href: "/dashboard/candidates", icon: Users, label: "Top Candidates" },
-    ],
-  },
-];
+type SidebarCounts = {
+  positions?: number;
+  applications?: number;
+};
 
-export function SidebarNav() {
+function buildNavSections(counts: SidebarCounts): { label: string; items: NavItem[] }[] {
+  return [
+    {
+      label: "Overview",
+      items: [
+        { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+      ],
+    },
+    {
+      label: "Recruitment",
+      items: [
+        { href: "/dashboard/positions", icon: Briefcase, label: "Open Positions", badge: counts.positions },
+        { href: "/dashboard/applications", icon: FileText, label: "All Applications", badge: counts.applications },
+        { href: "/dashboard/candidates", icon: Users, label: "Top Candidates" },
+      ],
+    },
+  ];
+}
+
+export function SidebarNav({ counts = {} }: { counts?: SidebarCounts }) {
   const pathname = usePathname();
+  const navSections = buildNavSections(counts);
 
   return (
     <nav className="flex-1 px-3 py-2">
