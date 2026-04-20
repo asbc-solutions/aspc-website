@@ -1,37 +1,45 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Building2 } from "lucide-react";
+import { ArrowRight, type LucideIcon } from "lucide-react";
 
-const SolutionCard = () => {
+interface SolutionCardProps {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  tags: string[];
+}
+
+const SolutionCard = ({ icon: Icon, title, description, tags }: SolutionCardProps) => {
   return (
-    <Card className="max-w-md rounded-2xl bg-white dark:bg-slate-800 p-3 shadow-lg ring-primary/10 dark:ring-blue-500/10">
-      <CardContent className="space-y-5 p-3 items-start ">
-        <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 dark:bg-blue-900/40 text-primary dark:text-blue-400">
-          <Building2 className="size-6" />
+    <Card className="h-full rounded-2xl bg-white dark:bg-slate-800 p-3 shadow-lg ring-1 ring-primary/10 dark:ring-blue-500/10">
+      <CardContent className="flex flex-col gap-5 p-3 h-full">
+        <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 dark:bg-blue-900/40 text-primary dark:text-blue-400 shrink-0">
+          <Icon className="size-6" />
         </div>
 
-        <div className="space-y-2">
-          <h3 className="text-2xl font-bold text-primary dark:text-blue-300 text-start">
-            ASPC ERP Suite
+        <div className="flex flex-col gap-2 flex-1">
+          <h3 className="text-xl font-bold text-primary dark:text-blue-300 text-start">
+            {title}
           </h3>
-          <p className="text-sm text-primary/70 dark:text-slate-300">
-            Enterprise resource planning for Arab businesses
+          <p className="text-sm text-primary/70 dark:text-slate-300 leading-relaxed">
+            {description}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full bg-primary/10 dark:bg-blue-900/40 px-3 py-1 text-xs font-semibold text-primary/50 dark:text-blue-300/70">
-            Enterprise
-          </span>
-          <span className="rounded-full bg-primary/10 dark:bg-blue-900/40 px-3 py-1 text-xs font-semibold text-primary/50 dark:text-blue-300/70">
-            Bilingual
-          </span>
-          <span className="rounded-full bg-primary/10 dark:bg-blue-900/40 px-3 py-1 text-xs font-semibold text-primary/50 dark:text-blue-300/70">
-            Cloud-Ready
-          </span>
+          {tags.map((tag) => (
+            <span
+              key={tag}
+              className="rounded-full bg-primary/10 dark:bg-blue-900/40 px-3 py-1 text-xs font-semibold text-primary/50 dark:text-blue-300/70"
+            >
+              {tag}
+            </span>
+          ))}
         </div>
 
-        <div className="flex items-center justify-around gap-2">
+        <div className="flex items-center justify-between gap-2 pt-1">
           <Button
             variant="link"
             className="px-0 text-primary dark:text-blue-400 dark:hover:text-blue-300"
