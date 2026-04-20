@@ -5,7 +5,7 @@ import Hero from "@/app/_components/header/Hero";
 import { Lightbulb, Target } from "lucide-react";
 
 const aboutDescription = (
-  <div className="space-y-3 text-center max-w-full! md:text-xl  text-base leading-relaxed text-white">
+  <div className="space-y-3">
     <p>
       is a forward-thinking software house dedicated to delivering innovative
       and scalable digital solutions for businesses of all sizes. Since our
@@ -39,6 +39,9 @@ const page = () => {
           headClassName="max-w-full!"
           description={aboutDescription}
           buttons={[]}
+          wrapperClassName="h-auto"
+          innerClassName="min-h-[75vh] sm:min-h-[70vh]"
+          descriptionClassName="w-full max-w-2xl px-4 text-base md:text-xl font-normal text-white leading-relaxed"
         />
       </FadeInSection>
 

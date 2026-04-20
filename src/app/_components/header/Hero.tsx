@@ -14,6 +14,12 @@ type HeroProps = {
   description?: React.ReactNode;
   buttons?: HeroButton[];
   headClassName?: string;
+  /** Override the outer wrapper height class. Defaults to "h-screen". */
+  wrapperClassName?: string;
+  /** Override the inner content min-height class. Defaults to "min-h-screen". */
+  innerClassName?: string;
+  /** Override the description wrapper classes. */
+  descriptionClassName?: string;
 };
 
 const defaultButtons: HeroButton[] = [
@@ -36,9 +42,12 @@ const Hero = ({
   description = "We build scalable software ecosystems that empower businesses across the Arab world to thrive in the digital age.",
   buttons = defaultButtons,
   headClassName = "",
+  wrapperClassName = "h-screen",
+  innerClassName = "min-h-screen",
+  descriptionClassName = "max-w-sm px-2 text-sm font-normal text-secondary dark:text-white sm:max-w-2xl sm:text-base",
 }: HeroProps) => {
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-linear-to-br from-primary-dark via-secondary-dark to-primary">
+    <div className={`relative w-full overflow-hidden bg-linear-to-br from-primary-dark via-secondary-dark to-primary ${wrapperClassName}`}>
       <div className="absolute inset-0">
         <FloatingLines
           enabledWaves={["top", "bottom", "middle"]}
@@ -53,7 +62,7 @@ const Hero = ({
       </div>
 
       <div className="relative">
-        <div className="text-white flex min-h-screen flex-col items-center justify-center gap-4 px-4 pt-24 pb-10 text-center sm:gap-5 sm:px-6 sm:pt-28 lg:px-8">
+        <div className={`text-white flex flex-col items-center justify-center gap-4 px-4 pt-24 pb-10 text-center sm:gap-5 sm:px-6 sm:pt-28 lg:px-8 ${innerClassName}`}>
           <Button className="group uppercase flex items-center justify-center gap-2 rounded-full border md:p-5 border-white/30 bg-white/10 dark:bg-black/10 text-xs font-medium text-primary-foreground backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.25)] transition-all duration-300 hover:bg-white/15 hover:border-white/45 px-5 py-2.5 sm:text-sm">
             <span className="inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-secondary dark:text-indigo-600" />
             <span>{tag}</span>
@@ -65,7 +74,7 @@ const Hero = ({
             {heading}
           </h1>
 
-          <div className="max-w-sm px-2 text-sm font-normal text-secondary dark:text-white sm:max-w-2xl sm:text-base">
+          <div className={descriptionClassName}>
             {typeof description === "string" ? (
               <p>{description}</p>
             ) : (
