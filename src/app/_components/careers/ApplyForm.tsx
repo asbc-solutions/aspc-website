@@ -186,10 +186,10 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
       setIsSubmitting(true);
       const answers = buildAnswersFromForm(position, data);
       const response = await submitPositionApplication(position.id, { answers });
-      console.log(
-        "SubmittedPositionApplicationAnswer[]",
-        response.data.answers,
-      );
+      // console.log(
+      //   "SubmittedPositionApplicationAnswer[]",
+      //   response.data.answers,
+      // );
 
       setSuccessMessage(response.message);
       setIsSubmitted(true);

@@ -7,6 +7,7 @@ import ReadyTo from "@/app/_components/home/ReadyTo";
 import FadeInSection from "@/app/_components/animation/FadeInSection";
 import { Suspense } from "react";
 import { getJobsData } from "@/app/api/jobs.api";
+import { Spinner } from "@/components/ui/spinner";
 
 const cultureData = [
   {
@@ -31,7 +32,6 @@ const cultureData = [
       "We believe in creating an environment where every voice matters and innovation thrives through diversity.",
   },
 ];
-
 
 const Page = () => {
   const jobsPromise = getJobsData().then((jobs) => {
@@ -90,7 +90,7 @@ const Page = () => {
         fallback={
           <FadeInSection>
             <div className="container mx-auto flex flex-col items-center justify-center gap-2 py-20 text-center text-muted-foreground">
-              Loading open positions…
+              <Spinner className="size-12 " />
             </div>
           </FadeInSection>
         }

@@ -1,23 +1,7 @@
-import { cookies } from "next/headers";
+import { getAuthHeaders } from "@/lib/auth-header";
 import { NextResponse } from "next/server";
 
-import { ADMIN_SESSION_COOKIE_NAME } from "@/lib/admin-token";
-
 const getApiUrl = () => process.env.NEXT_PUBLIC_API_URL;
-
-const getAuthHeaders = async () => {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(ADMIN_SESSION_COOKIE_NAME)?.value;
-
-  if (!token) {
-    return null;
-  }
-
-  return {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
-};
 
 type Context = {
   params: Promise<{ id: string }>;
@@ -65,8 +49,13 @@ export async function PUT(request: Request, context: Context) {
     }
 
     if (payload === null) {
-      const message = text.trim() || (res.ok ? "Position updated successfully." : "Request failed.");
-      return NextResponse.json({ message }, { status: res.ok ? 200 : res.status });
+      const message =
+        text.trim() ||
+        (res.ok ? "Position updated successfully." : "Request failed.");
+      return NextResponse.json(
+        { message },
+        { status: res.ok ? 200 : res.status },
+      );
     }
 
     return NextResponse.json(payload, { status: res.status });
@@ -122,9 +111,10 @@ export async function DELETE(_: Request, context: Context) {
     } catch {
       // non-JSON error body
     }
-    const message = (payload && typeof payload === "object" && "message" in payload)
-      ? (payload as Record<string, unknown>).message
-      : text.trim() || "Failed to delete position.";
+    const message =
+      payload && typeof payload === "object" && "message" in payload
+        ? (payload as Record<string, unknown>).message
+        : text.trim() || "Failed to delete position.";
     return NextResponse.json({ message }, { status: res.status });
   } catch {
     return NextResponse.json(

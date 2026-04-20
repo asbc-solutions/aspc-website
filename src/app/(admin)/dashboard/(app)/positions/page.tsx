@@ -16,6 +16,8 @@ import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
 
 // ─── Options ─────────────────────────────────────────────────────────────────
 
@@ -74,7 +76,10 @@ type Position = {
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
 
-const statusStyles: Record<PositionStatus, { bg: string; dot: string; text: string }> = {
+const statusStyles: Record<
+  PositionStatus,
+  { bg: string; dot: string; text: string }
+> = {
   Active: { bg: "#dcfce7", dot: "#22c55e", text: "#15803d" },
   Paused: { bg: "#ffedd5", dot: "#f97316", text: "#c2410c" },
 };
@@ -93,7 +98,11 @@ const toDateLabel = (v: unknown) => {
   const d = new Date(v);
   return Number.isNaN(d.getTime())
     ? "-"
-    : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+    : d.toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
 };
 
 const normalizePosition = (raw: unknown): Position | null => {
@@ -104,20 +113,31 @@ const normalizePosition = (raw: unknown): Position | null => {
   if (id === null || !title) return null;
 
   const workTypeObj = isRecord(raw.work_type) ? raw.work_type : null;
-  const employmentTypeObj = isRecord(raw.employment_type) ? raw.employment_type : null;
+  const employmentTypeObj = isRecord(raw.employment_type)
+    ? raw.employment_type
+    : null;
   const statusObj = isRecord(raw.status) ? raw.status : null;
 
-  const workTypeLabel = textOr(workTypeObj ? workTypeObj.label : raw.work_type, "Not set");
-  const workTypeId = workTypeObj && typeof workTypeObj.id === "number" ? workTypeObj.id : 0;
+  const workTypeLabel = textOr(
+    workTypeObj ? workTypeObj.label : raw.work_type,
+    "Not set",
+  );
+  const workTypeId =
+    workTypeObj && typeof workTypeObj.id === "number" ? workTypeObj.id : 0;
 
   const employmentTypeLabel = textOr(
     employmentTypeObj ? employmentTypeObj.label : raw.employment_type,
     "Not set",
   );
   const employmentTypeId =
-    employmentTypeObj && typeof employmentTypeObj.id === "number" ? employmentTypeObj.id : 0;
+    employmentTypeObj && typeof employmentTypeObj.id === "number"
+      ? employmentTypeObj.id
+      : 0;
 
-  const statusLabel = textOr(statusObj ? statusObj.label : raw.status, "active");
+  const statusLabel = textOr(
+    statusObj ? statusObj.label : raw.status,
+    "active",
+  );
   const statusId =
     statusObj && typeof statusObj.id === "number"
       ? statusObj.id
@@ -127,7 +147,8 @@ const normalizePosition = (raw: unknown): Position | null => {
   const status = toStatus(statusLabel);
 
   let applicants = 0;
-  if (typeof raw.applications_count === "number") applicants = raw.applications_count;
+  if (typeof raw.applications_count === "number")
+    applicants = raw.applications_count;
   else if (typeof raw.applicants === "number") applicants = raw.applicants;
 
   return {
@@ -141,12 +162,52 @@ const normalizePosition = (raw: unknown): Position | null => {
     level: textOr(raw.experience, textOr(employmentTypeLabel, "Not set")),
     employmentTypeId,
     applicants,
-    maxApplicants: typeof raw.max_applicants === "number" ? raw.max_applicants : 100,
+    maxApplicants:
+      typeof raw.max_applicants === "number" ? raw.max_applicants : 100,
     status,
     statusId,
     postedDate: toDateLabel(raw.created_at),
   };
 };
+
+// ─── Position card skeleton ───────────────────────────────────────────────────
+
+function PositionCardSkeleton() {
+  return (
+    <div className="flex flex-col gap-4 rounded-xl border border-[rgba(0,0,0,0.06)] animate-pulse  p-5 shadow-sm">
+      {/* row 1 – department badge + action icons */}
+      <div className="flex items-center justify-between ">
+        <Skeleton className="h-6 w-28 rounded-full" />
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-3.75 w-3.75 rounded" />
+          <Skeleton className="h-3.75 w-3.75 rounded" />
+        </div>
+      </div>
+
+      {/* row 2 – title + meta (location / work-type / level) */}
+      <div>
+        <Skeleton className="h-5 w-3/4 rounded" />
+        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+          <Skeleton className="h-3 w-24 rounded" />
+          <Skeleton className="h-3 w-16 rounded" />
+          <Skeleton className="h-3 w-20 rounded" />
+        </div>
+      </div>
+
+      {/* row 3 – progress bar + applicants count */}
+      <div className="flex items-center gap-3">
+        <Skeleton className="h-1.5 flex-1 rounded-full" />
+        <Skeleton className="h-3.5 w-20 rounded" />
+      </div>
+
+      {/* row 4 – status badge + posted date */}
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-5 w-16 rounded-full" />
+        <Skeleton className="h-3 w-24 rounded" />
+      </div>
+    </div>
+  );
+}
 
 // ─── Field component ──────────────────────────────────────────────────────────
 
@@ -162,7 +223,9 @@ function Field({
   fullWidth?: boolean;
 }>) {
   return (
-    <label className={`flex flex-col gap-1.5 text-sm text-[#374151]${fullWidth ? " col-span-full" : ""}`}>
+    <label
+      className={`flex flex-col gap-1.5 text-sm text-[#374151]${fullWidth ? " col-span-full" : ""}`}
+    >
       <span>{label}</span>
       {children}
       {error && <span className="text-xs text-red-600">{error}</span>}
@@ -352,7 +415,11 @@ function PositionModal({
               </select>
             </Field>
 
-            <Field label="Description" error={errors.description?.message} fullWidth>
+            <Field
+              label="Description"
+              error={errors.description?.message}
+              fullWidth
+            >
               <textarea
                 {...register("description")}
                 className={`min-h-24 ${inputClass}`}
@@ -376,7 +443,13 @@ function PositionModal({
               className="rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
               style={{ backgroundColor: "#1e3fb0" }}
             >
-              {isSubmitting ? "Saving..." : isEditing ? "Save Changes" : "Create Position"}
+              {isSubmitting ? (
+                <Spinner className="mx-auto" />
+              ) : isEditing ? (
+                "Save Changes"
+              ) : (
+                "Create Position"
+              )}
             </button>
           </div>
         </form>
@@ -463,7 +536,10 @@ function PositionCard({
           className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold"
           style={{ backgroundColor: stat.bg, color: stat.text }}
         >
-          <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: stat.dot }} />
+          <span
+            className="h-1.5 w-1.5 rounded-full"
+            style={{ backgroundColor: stat.dot }}
+          />
           {position.status}
         </span>
         <span className="text-xs text-[#9ca3af]">{position.postedDate}</span>
@@ -485,7 +561,9 @@ export default function PositionsPage() {
   const [modalPosition, setModalPosition] = useState<Position | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [positionToDelete, setPositionToDelete] = useState<Position | null>(null);
+  const [positionToDelete, setPositionToDelete] = useState<Position | null>(
+    null,
+  );
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
 
@@ -493,7 +571,9 @@ export default function PositionsPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/admin/careers/positions", { cache: "no-store" });
+      const res = await fetch("/api/admin/careers/positions", {
+        cache: "no-store",
+      });
       const payload: unknown = await res.json().catch(() => null);
 
       if (!res.ok) {
@@ -505,14 +585,17 @@ export default function PositionsPage() {
       }
 
       let rawList: unknown[] = [];
-      if (isRecord(payload) && Array.isArray(payload.data)) rawList = payload.data;
+      if (isRecord(payload) && Array.isArray(payload.data))
+        rawList = payload.data;
       else if (Array.isArray(payload)) rawList = payload;
 
       setPositions(
         rawList.map(normalizePosition).filter((p): p is Position => p !== null),
       );
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load positions.");
+      setError(
+        err instanceof Error ? err.message : "Failed to load positions.",
+      );
       setPositions([]);
     } finally {
       setLoading(false);
@@ -524,27 +607,35 @@ export default function PositionsPage() {
   }, []);
 
   const departments = useMemo(
-    () => Array.from(new Set(positions.map((p) => p.department))).filter(Boolean),
+    () =>
+      Array.from(new Set(positions.map((p) => p.department))).filter(Boolean),
     [positions],
   );
 
   const filtered = positions.filter((p) => {
     const matchSearch = p.title.toLowerCase().includes(search.toLowerCase());
-    const matchDept = department === "All Departments" || p.department === department;
-    const matchStatus = statusFilter === "All Status" || p.status === statusFilter;
+    const matchDept =
+      department === "All Departments" || p.department === department;
+    const matchStatus =
+      statusFilter === "All Status" || p.status === statusFilter;
     return matchSearch && matchDept && matchStatus;
   });
 
-  const activeRolesCount = positions.filter((p) => p.status === "Active").length;
+  const activeRolesCount = positions.filter(
+    (p) => p.status === "Active",
+  ).length;
 
   const handleConfirmDelete = async () => {
     if (!positionToDelete) return;
     setDeleting(true);
     setDeleteError("");
     try {
-      const res = await fetch(`/api/admin/careers/positions/${positionToDelete.id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `/api/admin/careers/positions/${positionToDelete.id}`,
+        {
+          method: "DELETE",
+        },
+      );
       const payload: unknown = await res.json().catch(() => null);
 
       if (!res.ok) {
@@ -568,8 +659,10 @@ export default function PositionsPage() {
   let positionsContent: React.ReactNode;
   if (loading) {
     positionsContent = (
-      <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-white py-20 text-center text-sm text-[#6b7280] shadow-sm">
-        Loading positions...
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <PositionCardSkeleton key={i} />
+        ))}
       </div>
     );
   } else if (filtered.length > 0) {
@@ -595,7 +688,9 @@ export default function PositionsPage() {
     positionsContent = (
       <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-xl border border-[rgba(0,0,0,0.06)] bg-white py-20 text-center shadow-sm">
         <Briefcase size={36} className="text-[#cbd5e1]" />
-        <p className="text-sm font-medium text-[#6b7280]">No positions match your filters</p>
+        <p className="text-sm font-medium text-[#6b7280]">
+          No positions match your filters
+        </p>
       </div>
     );
   }
@@ -608,8 +703,12 @@ export default function PositionsPage() {
         <main className="flex flex-1 flex-col gap-6 p-4 sm:p-6 lg:p-8">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h2 className="text-lg font-bold text-[#0d1240]">Open Positions</h2>
-              <p className="text-sm text-[#6b7280]">{activeRolesCount} active roles</p>
+              <h2 className="text-lg font-bold text-[#0d1240]">
+                Open Positions
+              </h2>
+              <p className="text-sm text-[#6b7280]">
+                {activeRolesCount} active roles
+              </p>
             </div>
             <button
               type="button"
@@ -694,14 +793,18 @@ export default function PositionsPage() {
       {positionToDelete && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4"
-          onClick={() => { if (!deleting) setPositionToDelete(null); }}
+          onClick={() => {
+            if (!deleting) setPositionToDelete(null);
+          }}
         >
           <div
             className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-[#0d1240]">Delete position</h3>
+              <h3 className="text-lg font-semibold text-[#0d1240]">
+                Delete position
+              </h3>
               <button
                 type="button"
                 onClick={() => setPositionToDelete(null)}
@@ -714,8 +817,10 @@ export default function PositionsPage() {
             </div>
             <p className="mt-3 text-sm text-[#4b5563]">
               Are you sure you want to delete{" "}
-              <span className="font-semibold">&quot;{positionToDelete.title}&quot;</span>? This
-              action cannot be undone.
+              <span className="font-semibold">
+                &quot;{positionToDelete.title}&quot;
+              </span>
+              ? This action cannot be undone.
             </p>
             {deleteError && (
               <p className="mt-2 text-sm text-red-600">{deleteError}</p>
@@ -736,7 +841,7 @@ export default function PositionsPage() {
                 className="rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
                 style={{ backgroundColor: "#dc2626" }}
               >
-                {deleting ? "Deleting..." : "Delete"}
+                {deleting ? <Spinner className="mx-auto" /> : "Delete"}
               </button>
             </div>
           </div>

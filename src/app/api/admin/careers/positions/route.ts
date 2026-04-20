@@ -1,23 +1,21 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-
-import { ADMIN_SESSION_COOKIE_NAME } from "@/lib/admin-token";
+import { getAuthHeaders } from "@/lib/auth-header";
 
 const getApiUrl = () => process.env.NEXT_PUBLIC_API_URL;
 
-const getAuthHeaders = async () => {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(ADMIN_SESSION_COOKIE_NAME)?.value;
+// const getAuthHeaders = async () => {
+//   const cookieStore = await cookies();
+//   const token = cookieStore.get(ADMIN_SESSION_COOKIE_NAME)?.value;
 
-  if (!token) {
-    return null;
-  }
+//   if (!token) {
+//     return null;
+//   }
 
-  return {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
-};
+//   return {
+//     Authorization: `Bearer ${token}`,
+//     "Content-Type": "application/json",
+//   };
+// };
 
 export async function GET() {
   const apiUrl = getApiUrl();

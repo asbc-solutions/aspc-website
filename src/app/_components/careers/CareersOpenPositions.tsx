@@ -9,7 +9,7 @@ export default function CareersOpenPositions({
   jobsPromise: Promise<JobPosition[]>;
 }>) {
   const jobs = use(jobsPromise);
-  console.log(jobs);
+  // console.log(jobs);
 
   return (
     <FadeInSection>
