@@ -17,6 +17,7 @@
 /.next/
 /.claude/
 /out/
+.vscode
 
 # production
 /build

@@ -86,6 +86,17 @@ const Page = () => {
         </div>
       </FadeInSection>
 
+      <FadeInSection>
+        <div className="flex flex-col items-center justify-center gap-3 text-center py-10">
+          <h1 className="text-3xl font-bold max-w-3xl dark:text-white">
+            Open Positions 
+          </h1>
+          <p className="uppercase text-primary dark:text-blue-400 text-xs font-bold">
+            Find your next career opportunity with ASPC
+          </p>
+        </div>
+      </FadeInSection>
+
       <Suspense
         fallback={
           <FadeInSection>
