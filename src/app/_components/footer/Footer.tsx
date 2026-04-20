@@ -13,9 +13,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 const quickLinks = [
-  { label: "ASPC ERP Suite", href: "/" },
-  { label: "ASPC CRM Pro", href: "/services" },
-  { label: "ASPC Shield", href: "/solutions" },
+  { label: "ASBC ERP Suite", href: "/" },
+  { label: "ASBC CRM Pro", href: "/services" },
+  { label: "ASBC Shield", href: "/solutions" },
   { label: "Cloud Platform", href: "/about" },
   { label: "Custom Development", href: "/portfolio" },
 ];
@@ -56,7 +56,7 @@ const Footer = () => {
           <div className="space-y-4 lg:col-span-1">
             <Image
               src={logo}
-              alt="ASPC logo"
+              alt="ASBC logo"
               className="w-24 h-auto"
               priority={false}
             />
@@ -125,16 +125,16 @@ const Footer = () => {
             <ul className="space-y-3">
               {/* <li className="flex items-start gap-2">
                 <Building2 size={18} className="mt-0.5 shrink-0" />
-                <span>ASPC Solutions</span>
+                <span>ASBC Solutions</span>
               </li> */}
 
               <li>
                 <a
-                  href="mailto:hello@aspc.solutions"
+                  href="mailto:hello@ASBC.solutions"
                   className="flex items-start gap-2 transition-colors hover:text-white"
                 >
                   <Mail size={18} className="mt-0.5 shrink-0 text-primary" />
-                  info@aspc.sa
+                  tech@asbc-sa.net
                 </a>
               </li>
               <li>
@@ -143,12 +143,12 @@ const Footer = () => {
                   className="flex items-start gap-2 transition-colors hover:text-white"
                 >
                   <Phone size={18} className="mt-0.5 shrink-0 text-primary" />
-                  +966 50 000 0000
+                  +20 1508775005
                 </a>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin size={18} className="mt-0.5 shrink-0 text-primary" />
-                <span>Mansoura — Ashjar District, Ali Hegazy Street</span>
+                <span>Mansoura - Hay Elgamaa - khalid Ibn Elwaleed st.</span>
               </li>
             </ul>
           </div>
@@ -157,7 +157,7 @@ const Footer = () => {
         <div className="mt-10 border-t border-white/20 pt-6 text-sm flex items-center justify-between">
           <p className="flex items-center gap-1">
             <Copyright size={15} />
-            {dayjs().year()} ASPC Solutions. All rights reserved.
+            {dayjs().year()} ASBC Solutions. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <p>Privacy Policy</p>
