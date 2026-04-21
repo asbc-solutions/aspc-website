@@ -17,23 +17,41 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid request body." },
+      { status: 400 },
+    );
   }
 
   const parsed = bodySchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Validation failed.", issues: parsed.error.issues }, { status: 422 });
+    return NextResponse.json(
+      { error: "Validation failed.", issues: parsed.error.issues },
+      { status: 422 },
+    );
   }
 
-  const { fullName, companyName, emailAddress, phoneNumber, serviceInterestedIn, projectBudget, message } =
-    parsed.data;
+  const {
+    fullName,
+    companyName,
+    emailAddress,
+    phoneNumber,
+    serviceInterestedIn,
+    projectBudget,
+    message,
+  } = parsed.data;
 
   const gmailUser = process.env.GMAIL_USER;
   const gmailPass = process.env.GMAIL_APP_PASSWORD;
 
   if (!gmailUser || !gmailPass) {
-    console.error("Missing GMAIL_USER or GMAIL_APP_PASSWORD environment variables.");
-    return NextResponse.json({ error: "Mail service not configured." }, { status: 503 });
+    console.error(
+      "Missing GMAIL_USER or GMAIL_APP_PASSWORD environment variables.",
+    );
+    return NextResponse.json(
+      { error: "Mail service not configured." },
+      { status: 503 },
+    );
   }
 
   const transporter = nodemailer.createTransport({
@@ -53,7 +71,7 @@ export async function POST(request: Request) {
       replyTo: emailAddress,
       subject: `New Contact: ${fullName} — ${serviceInterestedIn}`,
       html: `
-        <h2>New Project Enquiry</h2>
+        <h2>Project Proposal</h2>
         <table cellpadding="8" style="border-collapse:collapse;font-family:sans-serif;font-size:14px">
           <tr><td><strong>Full Name</strong></td><td>${fullName}</td></tr>
           <tr><td><strong>Company</strong></td><td>${companyName}</td></tr>
@@ -61,13 +79,28 @@ export async function POST(request: Request) {
           <tr><td><strong>Phone</strong></td><td>${phoneNumber}</td></tr>
           <tr><td><strong>Service</strong></td><td>${serviceInterestedIn}</td></tr>
           <tr><td><strong>Budget</strong></td><td>${projectBudget}</td></tr>
-          <tr><td valign="top"><strong>Message</strong></td><td style="white-space:pre-wrap">${message}</td></tr>
+          <tr>
+            <td valign="top" style="padding:8px;font-weight:bold;white-space:nowrap">Message</td>
+            <td style="padding:8px;white-space:pre-wrap;line-height:1.6">Dear ASBC Team,
+
+I hope this message finds you well.
+I am writing to follow up regarding ${serviceInterestedIn}.
+
+${message}
+
+Best regards,
+${fullName}</td>
+          </tr>
+
         </table>
       `,
     });
   } catch (err) {
     console.error("Failed to send email:", err);
-    return NextResponse.json({ error: "Failed to send email." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to send email." },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json({ ok: true });

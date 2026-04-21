@@ -3,7 +3,7 @@
 import * as React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import * as z from "zod";
 
@@ -63,7 +63,7 @@ const formSchema = z.object({
 
 export function ContactForm() {
   const controlClassName =
-    "h-11 rounded-xl border-slate-200 bg-white px-3 text-sm shadow-xs transition-all placeholder:text-slate-400 focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-primary/15";
+    "h-11 rounded-xl border-slate-200 bg-white px-3 text-sm text-slate-900 shadow-xs transition-all placeholder:text-slate-400 data-placeholder:text-slate-400 focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-primary/15 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 dark:data-placeholder:text-slate-500 dark:focus-visible:border-blue-400 dark:focus-visible:ring-blue-400/20";
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -229,7 +229,7 @@ export function ContactForm() {
                     >
                       <SelectValue placeholder="Select a service" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white dark:bg-slate-800 dark:text-slate-100">
                       <SelectItem value="web-development">
                         Web Development
                       </SelectItem>
@@ -264,7 +264,7 @@ export function ContactForm() {
                     >
                       <SelectValue placeholder="Select budget range" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white dark:bg-slate-800 dark:text-slate-100">
                       <SelectItem value="under-5k">Under $5,000</SelectItem>
                       <SelectItem value="5k-10k">$5,000 - $10,000</SelectItem>
                       <SelectItem value="10k-25k">$10,000 - $25,000</SelectItem>
@@ -297,7 +297,7 @@ export function ContactForm() {
                     id="contact-message"
                     placeholder="Share your goals, scope, timeline, and any key requirements."
                     rows={7}
-                    className="min-h-36 resize-y rounded-xl border-slate-200 bg-white px-3 py-2 text-sm shadow-xs placeholder:text-slate-400 focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-primary/15"
+                    className="min-h-36 resize-y rounded-xl border-slate-200 bg-white px-3 py-2 text-sm shadow-xs placeholder:text-slate-400 focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-primary/15 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus-visible:border-blue-400 dark:focus-visible:ring-blue-400/20"
                     aria-invalid={fieldState.invalid}
                   />
                   {fieldState.invalid && (
@@ -313,10 +313,20 @@ export function ContactForm() {
         <Button
           type="submit"
           form="contact-project-form"
-          className="h-11 gap-2 rounded-full bg-primary px-5 text-white hover:bg-[#0a3582]"
+          disabled={form.formState.isSubmitting}
+          className="h-11 gap-2 rounded-full bg-primary px-5 text-white hover:bg-[#0a3582] disabled:opacity-70"
         >
-          Send Message
-          <ArrowRight />
+          {form.formState.isSubmitting ? (
+            <>
+              Sending…
+              <Loader2 className="animate-spin" />
+            </>
+          ) : (
+            <>
+              Send Message
+              <ArrowRight />
+            </>
+          )}
         </Button>
       </CardFooter>
     </Card>
