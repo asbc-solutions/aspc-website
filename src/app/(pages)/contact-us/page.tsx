@@ -40,67 +40,70 @@ const ContactUs = () => {
                   <p className="text-secondary font-bold">ASPC </p>
                 </li>
 
-              <li className="flex items-start gap-3">
-                <MapPin size={18} className="mt-0.5 shrink-0 text-primary" />
-                <div className="space-y-1">
-                  <p className="text-xs font-semibold tracking-wide text-secondary/80 uppercase">
-                    Address
-                  </p>
-                  <p className="text-secondary">
-                    Mansoura - Ashjar District, Ali Hegazy Street
-                  </p>
-                </div>
-              </li>
+                <li className="flex items-start gap-3">
+                  <MapPin size={18} className="mt-0.5 shrink-0 text-primary" />
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold tracking-wide text-secondary/80 uppercase">
+                      Address
+                    </p>
+                    <p className="text-secondary">
+                      Mansoura - Ashjar District, Ali Hegazy Street
+                    </p>
+                  </div>
+                </li>
 
-              <li>
-                <a
-                  href="mailto:hello@aspc.solutions"
-                  className="flex items-start gap-3 text-secondary transition-opacity hover:opacity-90"
-                >
-                  <Mail size={18} className="mt-0.5 shrink-0 text-primary " />
-                  <span className="space-y-1">
-                    <span className="block text-xs font-semibold tracking-wide text-secondary/80 uppercase">
-                      Email
+                <li>
+                  <a
+                    href="mailto:hello@aspc.solutions"
+                    className="flex items-start gap-3 text-secondary transition-opacity hover:opacity-90"
+                  >
+                    <Mail size={18} className="mt-0.5 shrink-0 text-primary " />
+                    <span className="space-y-1">
+                      <span className="block text-xs font-semibold tracking-wide text-secondary/80 uppercase">
+                        Email
+                      </span>
+                      <span className="block text-secondary">info@aspc.sa</span>
                     </span>
-                    <span className="block text-secondary">info@aspc.sa</span>
-                  </span>
-                </a>
-              </li>
+                  </a>
+                </li>
 
-              <li>
-                <a
-                  href="tel:+966500000000"
-                  className="flex items-start gap-3 text-secondary transition-opacity hover:opacity-90"
-                >
-                  <Phone size={18} className="mt-0.5 shrink-0 text-primary" />
-                  <span className="space-y-1">
-                    <span className="block text-xs font-semibold tracking-wide text-secondary/80 uppercase">
-                      Phone Number
+                <li>
+                  <a
+                    href="tel:+966500000000"
+                    className="flex items-start gap-3 text-secondary transition-opacity hover:opacity-90"
+                  >
+                    <Phone size={18} className="mt-0.5 shrink-0 text-primary" />
+                    <span className="space-y-1">
+                      <span className="block text-xs font-semibold tracking-wide text-secondary/80 uppercase">
+                        Phone Number
+                      </span>
+                      <span className="block text-secondary">
+                        +966 50 000 0000
+                      </span>
                     </span>
-                    <span className="block text-secondary">
-                      +966 50 000 0000
-                    </span>
-                  </span>
-                </a>
-              </li>
+                  </a>
+                </li>
 
-              <li>
-                <a
-                  href="mailto:hello@aspc.solutions"
-                  className="flex items-start gap-3 text-secondary transition-opacity hover:opacity-90"
-                >
-                  <Globe size={18} className="mt-0.5 shrink-0 text-primary " />
+                <li>
+                  <a
+                    href="mailto:hello@aspc.solutions"
+                    className="flex items-start gap-3 text-secondary transition-opacity hover:opacity-90"
+                  >
+                    <Globe
+                      size={18}
+                      className="mt-0.5 shrink-0 text-primary "
+                    />
 
-                  <span className="space-y-1">
-                    <span className="block text-xs font-semibold tracking-wide text-secondary/80 uppercase">
-                      Website
+                    <span className="space-y-1">
+                      <span className="block text-xs font-semibold tracking-wide text-secondary/80 uppercase">
+                        Website
+                      </span>
+                      <span className="block text-secondary">
+                        arabian-solution-beacon.com
+                      </span>
                     </span>
-                    <span className="block text-secondary">
-                      arabian-solution-beacon.com
-                    </span>
-                  </span>
-                </a>
-              </li>
+                  </a>
+                </li>
 
                 <li className="space-y-3">
                   <h3 className="capitalize">follow us</h3>

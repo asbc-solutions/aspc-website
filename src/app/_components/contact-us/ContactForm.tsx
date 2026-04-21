@@ -78,21 +78,32 @@ export function ContactForm() {
     },
   });
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    toast("Your message has been sent", {
-      description: (
-        <pre className="mt-2 w-[320px] overflow-x-auto rounded-md bg-code p-4 text-code-foreground">
-          <code>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-      position: "bottom-right",
-      classNames: {
-        content: "flex flex-col gap-2",
-      },
-      style: {
-        "--border-radius": "calc(var(--radius)  + 4px)",
-      } as React.CSSProperties,
-    });
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to send");
+      }
+
+      form.reset();
+      toast("Your message has been sent", {
+        description: "We'll get back to you within 24 hours.",
+        position: "bottom-right",
+        style: {
+          "--border-radius": "calc(var(--radius)  + 4px)",
+        } as React.CSSProperties,
+      });
+    } catch {
+      toast.error("Something went wrong", {
+        description: "Please try again or email us directly.",
+        position: "bottom-right",
+      });
+    }
   }
 
   return (
@@ -304,7 +315,7 @@ export function ContactForm() {
           form="contact-project-form"
           className="h-11 gap-2 rounded-full bg-primary px-5 text-white hover:bg-[#0a3582]"
         >
-          Send Messge
+          Send Message
           <ArrowRight />
         </Button>
       </CardFooter>
