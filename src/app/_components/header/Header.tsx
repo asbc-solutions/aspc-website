@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ThemeToggle } from "../theme/ThemeToggle";
 import { SideMenu } from "./SideMenu";
+import { NavLinks } from "./NavLinks";
 
 const Header = () => {
   const navItems = [
@@ -23,15 +24,7 @@ const Header = () => {
         <Image src={logo} alt="logo" className="w-20" priority={true} />
       </Link>
       <nav className="hidden md:block">
-        <ul className="flex gap-5 text-white dark:text-indigo-300">
-          {navItems.slice(0, -1).map((item) => (
-            <li key={item.href} className="list-none">
-              <Link prefetch={true} href={item.href}>
-                {item.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <NavLinks items={navItems.slice(0, -1)} />
       </nav>
 
       <div className="flex items-center gap-4">
