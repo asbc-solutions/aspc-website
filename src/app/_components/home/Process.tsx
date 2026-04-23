@@ -41,7 +41,7 @@ const Process = () => {
   ];
 
   return (
-    <div className="container mx-auto py-20">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
       <div className="flex flex-col items-center justify-center gap-3 text-center">
         <p className="uppercase text-primary dark:text-blue-400 text-xs font-bold">
           Our Process
@@ -55,11 +55,15 @@ const Process = () => {
           successful outcomes every time.
         </p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 place-items-center">
         {processSteps.map((step, index) => (
           <div
             key={index}
-            className="flex flex-col items-center justify-center gap-2 mt-10"
+            className={`flex flex-col items-center justify-center gap-2 mt-10 w-full${
+              index === processSteps.length - 1
+                ? " sm:col-span-2 sm:max-w-xs lg:col-span-1 lg:max-w-none"
+                : ""
+            }`}
           >
             <div className="relative w-max">
               <div className="border-2 border-primary/50 dark:border-blue-500/50 rounded-full p-3">

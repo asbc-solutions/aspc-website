@@ -154,7 +154,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-10 border-t border-white/20 pt-6 text-sm flex items-center justify-between">
+        <div className="mt-10 border-t border-white/20 pt-6 text-sm flex flex-col md:flex-row gap-5 items-center justify-between">
           <p className="flex items-center gap-1">
             <Copyright size={15} />
             {dayjs().year()} ASBC Solutions. All rights reserved.

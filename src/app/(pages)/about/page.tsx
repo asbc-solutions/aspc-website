@@ -30,7 +30,7 @@ const page = () => {
 
       {/* our vision component */}
       <FadeInSection>
-        <div className="flex items-center justify-center gap-5 container mx-auto pb-20 flex-col lg:flex-row">
+        <div className="flex items-center justify-center gap-5 container mx-auto px-4 pb-20 flex-col lg:flex-row">
           <OurVision
             icon={<Target />}
             heading="Our mission"

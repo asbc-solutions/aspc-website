@@ -42,8 +42,8 @@ const services = [
 
 const Serviece = () => {
   return (
-    <div className="bg-main dark:bg-slate-950 flex items-center justify-center gap-10 py-20 flex-col">
-      <div className="container mx-auto">
+    <div className="bg-main dark:bg-slate-950 py-16 lg:py-20">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center justify-center gap-3 text-center">
           <p className="uppercase text-primary dark:text-blue-400 text-xs font-bold">
             our services

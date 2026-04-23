@@ -62,7 +62,7 @@ const OurValue = () => {
   ];
 
   return (
-    <div className="container bg-main dark:bg-slate-950 py-20 mx-auto flex flex-col items-center justify-center gap-10">
+    <div className="container bg-main dark:bg-slate-950 py-20 mx-auto flex flex-col items-center justify-center gap-10 px-4">
       <div className="flex flex-col items-center justify-center gap-3 text-center">
         <p className="uppercase text-primary dark:text-blue-400 text-xs font-bold">
           What We Stand For

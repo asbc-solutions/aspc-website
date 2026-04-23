@@ -36,7 +36,7 @@ const page = () => {
           heading="Ready to Transform Your Business"
           paragraph="Let's discuss how our services can help you achieve your goals. Contact us
           today for a free consultation."
-          btnTextOne="Contact "
+          btnTextOne="Contact Us"
           btnTextTwo="Explore Solutions"
           className="py-20"
         />

@@ -29,8 +29,8 @@ const processSteps = [
 
 const WhyUs = () => {
   return (
-    <div className=" py-20 bg-[#1B2472] dark:bg-slate-950">
-      <div className="container mx-auto ">
+    <div className="py-16 lg:py-20 bg-[#1B2472] dark:bg-slate-950">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center justify-center gap-3 text-center">
           <p className="uppercase text-secondary dark:text-blue-300 text-xs font-bold">
             Why Choose ASPC
