@@ -14,15 +14,19 @@ import {
   Globe,
   MapPin,
   Monitor,
+  Paperclip,
   RotateCcw,
   ShieldCheck,
   TrendingUp,
+  Upload,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import * as z from "zod";
 import {
   type CareerApplicationAnswerInput,
   type JobPositionDetails,
+  type JobPositionField,
   submitPositionApplication,
 } from "@/app/api/jobs.api";
 
@@ -52,17 +56,56 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { formSchema } from "@/app/schema";
 
+// ─── Constants ────────────────────────────────────────────────────────────────
+
 const HEARD_ABOUT_OPTIONS = [
   "LinkedIn",
   "Referral",
   "Website",
   "Other",
 ] as const;
+
 const WORK_TYPE_OPTIONS = [
   { value: "on-site", label: "On-site", icon: Briefcase },
   { value: "remote", label: "Remote", icon: Monitor },
   { value: "hybrid", label: "Hybrid", icon: ArrowLeftRight },
 ] as const;
+
+const MAX_CV_SIZE = 5 * 1024 * 1024; // 5 MB
+
+// Labels that are already handled by the fixed form fields.
+// Normalised with the same function used in buildAnswersFromForm.
+const STATIC_FIELD_KEYS = new Set([
+  "fullname",
+  "emailaddress",
+  "phonenumber",
+  "yearsofexperience",
+  "coverletter",
+  "portfoliourl",
+  "portfoliogithub",
+  "portfolio",
+  "github",
+  "cvlink",
+  "cvportfoliolink",
+  "cv",
+  "cvfile",
+  "linkedinprofile",
+  "linkedinurl",
+  "linkedin",
+  "city",
+  "nationality",
+  "wheredidyouwork",
+  "lastcompany",
+  "recentcompany",
+  "expectedsalarymonthly",
+  "expectedsalary",
+  "livedemolink",
+  "liveproject",
+  "livedemo",
+  "liveprojecturl",
+]);
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 type ApplyFormValues = z.infer<typeof formSchema>;
 
@@ -70,14 +113,19 @@ type ApplyFormProps = {
   position: JobPositionDetails | null;
 };
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
 const normalizeLabel = (value: string): string =>
   value.toLowerCase().replaceAll(/[^a-z0-9]/g, "");
 
 const buildAnswersFromForm = (
   position: JobPositionDetails,
   data: ApplyFormValues,
+  extraAnswers: Record<number, string | string[]>,
+  uploadedCvUrl: string,
 ): CareerApplicationAnswerInput[] => {
   const fullName = `${data.firstName} ${data.lastName}`.trim();
+  const cvUrl = uploadedCvUrl || data.cvLink;
 
   const answerMap: Record<string, string | number | boolean | string[]> = {
     fullname: fullName,
@@ -86,31 +134,201 @@ const buildAnswersFromForm = (
     yearsofexperience: data.yearsExperience,
     coverletter: data.coverMessage,
     portfoliourl: data.portfolio,
-    cvlink: data.cvLink,
+    portfoliogithub: data.portfolio,
+    portfolio: data.portfolio,
+    github: data.portfolio,
+    cvlink: cvUrl,
+    cvportfoliolink: cvUrl,
+    cv: cvUrl,
+    cvfile: cvUrl,
     linkedinprofile: data.linkedIn,
+    linkedinurl: data.linkedIn,
+    linkedin: data.linkedIn,
     city: data.city,
     nationality: data.nationality,
     wheredidyouwork: data.recentCompany ?? "",
+    lastcompany: data.recentCompany ?? "",
+    recentcompany: data.recentCompany ?? "",
     expectedsalarymonthly: data.expectedSalary ?? "",
+    expectedsalary: data.expectedSalary ?? "",
     livedemolink: data.liveProject ?? "",
-    frontendframeworks: data.heardAbout ?? [],
-    availabilitytostart: data.workType,
+    liveproject: data.liveProject ?? "",
+    livedemo: data.liveProject ?? "",
+    liveprojecturl: data.liveProject ?? "",
   };
 
   return position.form_fields
     .map((field) => {
-      const mappedValue = answerMap[normalizeLabel(field.label)];
-      if (mappedValue === undefined || mappedValue === "") {
-        return null;
+      if (field.id in extraAnswers) {
+        const value = extraAnswers[field.id];
+        if (value === "" || (Array.isArray(value) && value.length === 0))
+          return null;
+        return { form_field_id: field.id, value };
       }
-
-      return {
-        form_field_id: field.id,
-        value: mappedValue,
-      };
+      const mappedValue = answerMap[normalizeLabel(field.label)];
+      if (mappedValue === undefined || mappedValue === "") return null;
+      return { form_field_id: field.id, value: mappedValue };
     })
-    .filter((answer): answer is CareerApplicationAnswerInput => answer !== null);
+    .filter((a): a is CareerApplicationAnswerInput => a !== null);
 };
+
+// ─── Dynamic Field renderer ───────────────────────────────────────────────────
+
+function DynamicFormField({
+  field,
+  value,
+  error,
+  onChange,
+  controlClassName,
+}: Readonly<{
+  field: JobPositionField;
+  value: string | string[];
+  error?: string;
+  onChange: (v: string | string[]) => void;
+  controlClassName: string;
+}>) {
+  const strVal = Array.isArray(value) ? "" : value;
+  const arrVal = Array.isArray(value) ? value : [];
+
+  const fieldId = `dynamic-field-${field.id}`;
+
+  // Text
+  if (field.type.value === 1) {
+    return (
+      <Field data-invalid={!!error} className="gap-1.5 md:col-span-2">
+        <FieldLabel htmlFor={fieldId}>
+          {field.label}
+          {field.is_required && " *"}
+        </FieldLabel>
+        <Input
+          id={fieldId}
+          value={strVal}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={field.label}
+          className={controlClassName}
+          aria-invalid={!!error}
+        />
+        {error && <FieldError errors={[{ message: error }]} />}
+      </Field>
+    );
+  }
+
+  // Textarea
+  if (field.type.value === 2) {
+    return (
+      <Field data-invalid={!!error} className="gap-1.5 md:col-span-2">
+        <FieldLabel htmlFor={fieldId}>
+          {field.label}
+          {field.is_required && " *"}
+        </FieldLabel>
+        <Textarea
+          id={fieldId}
+          value={strVal}
+          onChange={(e) => onChange(e.target.value)}
+          rows={4}
+          placeholder={field.label}
+          className="min-h-24 resize-y rounded-xl border-[#d6e6ff] bg-white px-3 py-2 text-sm shadow-xs placeholder:text-slate-400 focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-primary/15 dark:border-slate-700 dark:bg-slate-900"
+          aria-invalid={!!error}
+        />
+        {error && <FieldError errors={[{ message: error }]} />}
+      </Field>
+    );
+  }
+
+  // Number
+  if (field.type.value === 3) {
+    return (
+      <Field data-invalid={!!error} className="gap-1.5 md:col-span-2">
+        <FieldLabel htmlFor={fieldId}>
+          {field.label}
+          {field.is_required && " *"}
+        </FieldLabel>
+        <Input
+          id={fieldId}
+          type="number"
+          value={strVal}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={field.label}
+          className={controlClassName}
+          aria-invalid={!!error}
+        />
+        {error && <FieldError errors={[{ message: error }]} />}
+      </Field>
+    );
+  }
+
+  // Radio (single choice)
+  if (field.type.value === 4) {
+    return (
+      <Field data-invalid={!!error} className="gap-1.5 md:col-span-2">
+        <FieldLabel>
+          {field.label}
+          {field.is_required && " *"}
+        </FieldLabel>
+        <div className="flex flex-wrap gap-2">
+          {field.choices.map((choice) => (
+            <button
+              key={choice.id}
+              type="button"
+              onClick={() => onChange(String(choice.id))}
+              className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+                strVal === String(choice.id)
+                  ? "border-primary bg-primary/5 text-primary"
+                  : "border-[#d6e6ff] text-slate-500 hover:border-primary/50"
+              }`}
+            >
+              {choice.label}
+            </button>
+          ))}
+        </div>
+        {error && <FieldError errors={[{ message: error }]} />}
+      </Field>
+    );
+  }
+
+  // Multi Choice (multiple selections)
+  if (field.type.value === 6) {
+    return (
+      <Field data-invalid={!!error} className="gap-1.5 md:col-span-2">
+        <FieldLabel>
+          {field.label}
+          {field.is_required && " *"}
+        </FieldLabel>
+        <div className="flex flex-wrap gap-2">
+          {field.choices.map((choice) => {
+            const choiceKey = String(choice.id);
+            const active = arrVal.includes(choiceKey);
+            return (
+              <button
+                key={choice.id}
+                type="button"
+                onClick={() =>
+                  onChange(
+                    active
+                      ? arrVal.filter((v) => v !== choiceKey)
+                      : [...arrVal, choiceKey],
+                  )
+                }
+                className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+                  active
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-[#d6e6ff] text-slate-500 hover:border-primary/50"
+                }`}
+              >
+                {choice.label}
+              </button>
+            );
+          })}
+        </div>
+        {error && <FieldError errors={[{ message: error }]} />}
+      </Field>
+    );
+  }
+
+  return null;
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
   const [step, setStep] = React.useState(1);
@@ -119,11 +337,35 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
   const [successMessage, setSuccessMessage] = React.useState(
     "Your application has been submitted successfully.",
   );
+
+  // CV upload state
+  const [cvFile, setCvFile] = React.useState<File | null>(null);
+  const [cvUploading, setCvUploading] = React.useState(false);
+  const [cvUploadError, setCvUploadError] = React.useState("");
+  const [cvUploadedUrl, setCvUploadedUrl] = React.useState("");
+
+  // Extra dynamic field answers (field id → value)
+  const [dynamicAnswers, setDynamicAnswers] = React.useState<
+    Record<number, string | string[]>
+  >({});
+  const [dynamicErrors, setDynamicErrors] = React.useState<
+    Record<number, string>
+  >({});
+
   const controlClassName =
     "h-11 rounded-xl border-[#d6e6ff] bg-white px-3 text-sm shadow-xs transition-all placeholder:text-slate-400 focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-primary/15 aria-invalid:border-red-500 aria-invalid:ring-red-500/20 dark:border-slate-700 dark:bg-slate-900 dark:aria-invalid:border-red-500";
   const sectionLabelClass =
     "mb-3 mt-1 text-xs font-semibold tracking-[0.18em] text-primary/70 uppercase";
   const positionTitle = position?.title ?? "";
+
+  // Dynamic fields from admin not handled by fixed static fields
+  const dynamicFormFields = React.useMemo(
+    () =>
+      (position?.form_fields ?? []).filter(
+        (f) => !STATIC_FIELD_KEYS.has(normalizeLabel(f.label)),
+      ),
+    [position],
+  );
 
   const stepFieldMap: Record<
     number,
@@ -143,7 +385,6 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
       "yearsExperience",
       "recentCompany",
       "expectedSalary",
-      "cvLink",
       "linkedIn",
       "portfolio",
       "liveProject",
@@ -176,21 +417,129 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
     },
   });
 
+  // ── CV Upload ────────────────────────────────────────────────────────────────
+
+  const handleCvFileSelect = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setCvUploadError("");
+
+    if (file.size > MAX_CV_SIZE) {
+      setCvUploadError("File exceeds the 5 MB limit.");
+      e.target.value = "";
+      return;
+    }
+
+    const allowed = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+    if (!allowed.includes(file.type)) {
+      setCvUploadError("Only PDF and Word documents are accepted.");
+      e.target.value = "";
+      return;
+    }
+
+    setCvFile(file);
+    setCvUploading(true);
+    setCvUploadedUrl("");
+
+    try {
+      const fd = new FormData();
+      fd.append("cv", file);
+      const res = await fetch("/api/upload/cv", { method: "POST", body: fd });
+      const payload = (await res.json().catch(() => null)) as Record<
+        string,
+        unknown
+      > | null;
+
+      if (!res.ok) {
+        setCvUploadError(
+          typeof payload?.message === "string"
+            ? payload.message
+            : "Upload failed.",
+        );
+        setCvFile(null);
+        return;
+      }
+
+      // Extract URL from common response shapes
+      const url =
+        (typeof payload?.url === "string" && payload.url) ||
+        (typeof (payload?.data as Record<string, unknown>)?.url === "string" &&
+          (payload?.data as Record<string, unknown>).url) ||
+        (typeof payload?.data === "string" && payload.data) ||
+        "";
+      setCvUploadedUrl(url as string);
+      form.setValue("cvLink", url as string);
+    } catch {
+      setCvUploadError("Upload failed. Please try again.");
+      setCvFile(null);
+    } finally {
+      setCvUploading(false);
+    }
+  };
+
+  const removeCvFile = () => {
+    setCvFile(null);
+    setCvUploadedUrl("");
+    setCvUploadError("");
+    form.setValue("cvLink", "");
+  };
+
+  // ── Dynamic field helpers ────────────────────────────────────────────────────
+
+  const handleDynamicChange = (
+    fieldId: number,
+    value: string | string[],
+  ) => {
+    setDynamicAnswers((prev) => ({ ...prev, [fieldId]: value }));
+    if (dynamicErrors[fieldId]) {
+      setDynamicErrors((prev) => {
+        const next = { ...prev };
+        delete next[fieldId];
+        return next;
+      });
+    }
+  };
+
+  const validateDynamicFields = (): boolean => {
+    const errs: Record<number, string> = {};
+    for (const field of dynamicFormFields) {
+      if (!field.is_required) continue;
+      const val = dynamicAnswers[field.id];
+      const isEmpty =
+        val === undefined ||
+        val === "" ||
+        (Array.isArray(val) && val.length === 0);
+      if (isEmpty) errs[field.id] = "This field is required.";
+    }
+    setDynamicErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  // ── Form flow ────────────────────────────────────────────────────────────────
+
   const onSubmit = async (data: ApplyFormValues) => {
     if (!position) {
       toast.error("Position details are missing. Please refresh the page.");
       return;
     }
-
     try {
       setIsSubmitting(true);
-      const answers = buildAnswersFromForm(position, data);
-      const response = await submitPositionApplication(position.id, { answers });
-      // console.log(
-      //   "SubmittedPositionApplicationAnswer[]",
-      //   response.data.answers,
-      // );
-
+      const answers = buildAnswersFromForm(
+        position,
+        data,
+        dynamicAnswers,
+        cvUploadedUrl,
+      );
+      const response = await submitPositionApplication(position.id, {
+        answers,
+      });
       setSuccessMessage(response.message);
       setIsSubmitted(true);
       toast("Application submitted", {
@@ -227,6 +576,11 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
       certifiedInfo: false,
       applyingFor: positionTitle,
     });
+    setCvFile(null);
+    setCvUploadedUrl("");
+    setCvUploadError("");
+    setDynamicAnswers({});
+    setDynamicErrors({});
     setStep(1);
     setIsSubmitted(false);
   };
@@ -235,16 +589,17 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
     const isValid = await form.trigger(stepFieldMap[step], {
       shouldFocus: true,
     });
-    if (isValid) {
-      setStep((prev) => Math.min(prev + 1, 3));
-    }
+    if (!isValid) return;
+
+    if (step === 2 && !validateDynamicFields()) return;
+
+    setStep((prev) => Math.min(prev + 1, 3));
   };
 
   const onBack = () => setStep((prev) => Math.max(prev - 1, 1));
 
   let stepTitle = "Cover Message";
   let stepDescription = "Almost done - one last step.";
-
   if (step === 1) {
     stepTitle = "Personal Information";
     stepDescription = "Start with your basic contact details.";
@@ -252,6 +607,8 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
     stepTitle = "Experience & Documents";
     stepDescription = "Tell us about your background.";
   }
+
+  // ── Success screen ───────────────────────────────────────────────────────────
 
   if (isSubmitted) {
     return (
@@ -278,6 +635,8 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
       </Card>
     );
   }
+
+  // ── Form ─────────────────────────────────────────────────────────────────────
 
   return (
     <div className="grid w-full gap-6 lg:grid-cols-[minmax(0,1fr)_320px] ">
@@ -306,6 +665,7 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
             id="careers-application-form"
             onSubmit={form.handleSubmit(onSubmit)}
           >
+            {/* ── Step 1 ── */}
             {step === 1 && (
               <FieldGroup className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <p className={`${sectionLabelClass} md:col-span-2`}>
@@ -512,6 +872,7 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
               </FieldGroup>
             )}
 
+            {/* ── Step 2 ── */}
             {step === 2 && (
               <FieldGroup className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <p className={`${sectionLabelClass} md:col-span-2`}>
@@ -586,7 +947,7 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
                       className="gap-1.5 md:col-span-2"
                     >
                       <FieldLabel htmlFor="app-recent-company">
-                        Where did you work?
+                        Last Company
                       </FieldLabel>
                       <Input
                         {...field}
@@ -623,30 +984,78 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
                     </Field>
                   )}
                 />
-                <Controller
-                  name="cvLink"
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field
-                      data-invalid={fieldState.invalid}
-                      className="gap-1.5 md:col-span-2"
+
+                {/* CV Upload */}
+                <Field className="gap-1.5 md:col-span-2">
+                  <FieldLabel htmlFor="app-cv-upload">
+                    Upload CV{" "}
+                    <span className="text-xs font-normal text-slate-400">
+                      (PDF or Word, max 5 MB)
+                    </span>
+                  </FieldLabel>
+                  {cvFile ? (
+                    <div
+                      className={`flex items-center gap-3 rounded-xl border px-4 py-3 text-sm ${
+                        cvUploading
+                          ? "border-[#d6e6ff] bg-blue-50/40"
+                          : cvUploadedUrl
+                            ? "border-green-300 bg-green-50"
+                            : "border-red-300 bg-red-50"
+                      }`}
                     >
-                      <FieldLabel htmlFor="app-cv-link">
-                        CV / Portfolio Link
-                      </FieldLabel>
-                      <Input
-                        {...field}
-                        id="app-cv-link"
-                        type="url"
-                        placeholder="https://drive.google.com/..."
-                        className={controlClassName}
-                      />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
+                      {cvUploading ? (
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                      ) : cvUploadedUrl ? (
+                        <Check className="size-4 shrink-0 text-green-600" />
+                      ) : (
+                        <Paperclip className="size-4 shrink-0 text-slate-400" />
                       )}
-                    </Field>
+                      <span className="flex-1 truncate text-slate-700">
+                        {cvFile.name}
+                      </span>
+                      {cvUploading ? (
+                        <span className="text-xs text-slate-500">
+                          Uploading…
+                        </span>
+                      ) : cvUploadedUrl ? (
+                        <span className="text-xs font-semibold text-green-600">
+                          Uploaded
+                        </span>
+                      ) : null}
+                      {!cvUploading && (
+                        <button
+                          type="button"
+                          onClick={removeCvFile}
+                          className="ml-1 text-slate-400 hover:text-red-500"
+                          aria-label="Remove file"
+                        >
+                          <X className="size-4" />
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <label
+                      htmlFor="app-cv-upload"
+                      className="flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-[#d6e6ff] bg-white px-4 py-4 text-sm transition hover:border-primary/60 hover:bg-primary/5 dark:border-slate-700 dark:bg-slate-900"
+                    >
+                      <Upload className="size-5 shrink-0 text-primary/60" />
+                      <span className="text-slate-500">
+                        Click to upload your CV
+                      </span>
+                      <input
+                        id="app-cv-upload"
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        className="sr-only"
+                        onChange={handleCvFileSelect}
+                      />
+                    </label>
                   )}
-                />
+                  {cvUploadError && (
+                    <p className="text-xs text-red-500">{cvUploadError}</p>
+                  )}
+                </Field>
+
                 <p className={`${sectionLabelClass} md:col-span-2`}>
                   Online Presence
                 </p>
@@ -659,7 +1068,7 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
                       className="gap-1.5 md:col-span-2"
                     >
                       <FieldLabel htmlFor="app-linkedin">
-                        LinkedIn Profile
+                        LinkedIn URL
                       </FieldLabel>
                       <Input
                         {...field}
@@ -683,7 +1092,7 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
                       className="gap-1.5"
                     >
                       <FieldLabel htmlFor="app-portfolio">
-                        Portfolio / GitHub
+                        Portfolio URL
                       </FieldLabel>
                       <Input
                         {...field}
@@ -707,7 +1116,7 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
                       className="gap-1.5"
                     >
                       <FieldLabel htmlFor="app-live-project">
-                        Live Project
+                        Live Demo Project URL
                       </FieldLabel>
                       <Input
                         {...field}
@@ -722,9 +1131,32 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
                     </Field>
                   )}
                 />
+
+                {/* Dynamic admin fields for this position */}
+                {dynamicFormFields.length > 0 && (
+                  <>
+                    <p className={`${sectionLabelClass} md:col-span-2`}>
+                      Additional Information
+                    </p>
+                    {dynamicFormFields.map((f) => (
+                      <DynamicFormField
+                        key={f.id}
+                        field={f}
+                        value={
+                          dynamicAnswers[f.id] ??
+                          (f.type.value === 6 ? [] : "")
+                        }
+                        error={dynamicErrors[f.id]}
+                        onChange={(v) => handleDynamicChange(f.id, v)}
+                        controlClassName={controlClassName}
+                      />
+                    ))}
+                  </>
+                )}
               </FieldGroup>
             )}
 
+            {/* ── Step 3 ── */}
             {step === 3 && (
               <FieldGroup className="grid grid-cols-1 gap-4">
                 <p className={sectionLabelClass}>Cover Message</p>
@@ -749,8 +1181,8 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
                       {fieldState.invalid &&
                         (fieldState.isTouched ||
                           form.formState.submitCount > 0) && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                          <FieldError errors={[fieldState.error]} />
+                        )}
                     </Field>
                   )}
                 />
@@ -813,8 +1245,8 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
                       {fieldState.invalid &&
                         (fieldState.isTouched ||
                           form.formState.submitCount > 0) && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                          <FieldError errors={[fieldState.error]} />
+                        )}
                     </Field>
                   )}
                 />
@@ -844,8 +1276,8 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
                       {fieldState.invalid &&
                         (fieldState.isTouched ||
                           form.formState.submitCount > 0) && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                          <FieldError errors={[fieldState.error]} />
+                        )}
                     </Field>
                   )}
                 />
@@ -873,7 +1305,7 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
                 type="button"
                 className="h-10 rounded-lg px-6"
                 onClick={onContinue}
-                disabled={isSubmitting}
+                disabled={isSubmitting || cvUploading}
               >
                 Continue
                 <ArrowRight />
@@ -893,6 +1325,7 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
         </CardFooter>
       </Card>
 
+      {/* ── Sidebar ── */}
       <div className="space-y-4 ">
         <Card className="border-[#d6e6ff] dark:border-slate-700">
           <CardHeader className="pb-3">
@@ -925,7 +1358,9 @@ export default function ApplyForm({ position }: Readonly<ApplyFormProps>) {
                 <p className="text-xs uppercase tracking-wider text-slate-500">
                   Location
                 </p>
-                <p className="font-semibold">{position?.work_type.label ?? "-"}</p>
+                <p className="font-semibold">
+                  {position?.work_type.label ?? "-"}
+                </p>
               </div>
             </div>
             <div className="flex items-start gap-3">

@@ -4,6 +4,7 @@ import {
   Briefcase,
   Calendar,
   ChevronDown,
+  ListChecks,
   MapPin,
   Pencil,
   Plus,
@@ -11,6 +12,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -482,6 +484,13 @@ function PositionCard({
           {position.department}
         </span>
         <div className="flex items-center gap-3 text-[#9ca3af]">
+          <Link
+            href={`/dashboard/positions/${position.id}/fields`}
+            className="hover:text-[#1e3fb0]"
+            aria-label="Manage form fields"
+          >
+            <ListChecks size={15} />
+          </Link>
           <button
             type="button"
             className="hover:text-[#6b7280]"
