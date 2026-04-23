@@ -158,6 +158,8 @@ const page = () => {
           btnTextOne="Start Your Project "
           btnTextTwo="Explore Our Services"
           className="py-20"
+          LinkOne="contact-us"
+          LinkTwo="services"
         />
       </FadeInSection>
     </>

@@ -37,6 +37,8 @@ const page = () => {
           paragraph="Let's discuss how our services can help you achieve your goals. Contact us
           today for a free consultation."
           btnTextOne="Contact Us"
+          LinkOne="contact-us"
+          LinkTwo="solutions"
           btnTextTwo="Explore Solutions"
           className="py-20"
         />

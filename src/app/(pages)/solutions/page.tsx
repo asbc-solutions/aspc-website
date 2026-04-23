@@ -34,6 +34,7 @@ const page = () => {
           paragraph="Our team of experts can build tailored software solutions that perfectly match your unique business requirements."
           btnTextOne="Discuss Your Project"
           className="py-30 bg-[linear-gradient(#1B2472)]! "
+          LinkOne="contact-us"
         />
       </FadeInSection>
     </div>

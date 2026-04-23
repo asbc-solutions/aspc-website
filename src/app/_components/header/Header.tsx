@@ -14,7 +14,7 @@ const Header = () => {
     { label: "Portfolio", href: "/portfolio" },
     // i will remove you again
     { label: "Careers", href: "/careers" },
-    { label: "event", href: "/event" },
+    { label: "Event", href: "/event" },
     { label: "Contact Us", href: "/contact-us" },
   ];
 

@@ -26,7 +26,7 @@ export function SideMenu() {
     { label: "Portfolio", href: "/portfolio" },
     { label: "Careers", href: "/careers" },
     // i will remove you again
-    { label: "event", href: "/event" },
+    { label: "Event", href: "/event" },
     { label: "Contact Us", href: "/contact-us" },
   ];
 

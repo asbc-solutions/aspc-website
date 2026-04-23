@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
 import FloatingLines from "@/components/FloatingLines";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 type HeroButton = {
   label: string;
   icon?: React.ReactNode;
+  href: string;
   className: string;
 };
 
@@ -26,11 +28,13 @@ const defaultButtons: HeroButton[] = [
   {
     label: "Start Your Project",
     icon: <ArrowRight />,
+    href: "contact-us",
     className:
       "flex w-full items-center justify-center gap-2 rounded-full bg-white dark:bg-black/10 dark:text-white dark:border-white/30 p-5 font-semibold text-black sm:w-auto",
   },
   {
     label: "Explore Solutions",
+    href: "solutions",
     className:
       "flex w-full items-center justify-center gap-2 rounded-full border border-white/30 bg-white/10 dark:bg-white p-5 font-semibold dark:text-black sm:w-auto",
   },
@@ -47,7 +51,9 @@ const Hero = ({
   descriptionClassName = "max-w-sm px-2 text-sm font-normal text-secondary dark:text-white sm:max-w-2xl sm:text-base",
 }: HeroProps) => {
   return (
-    <div className={`relative w-full overflow-hidden bg-linear-to-br from-primary-dark via-secondary-dark to-primary ${wrapperClassName}`}>
+    <div
+      className={`relative w-full overflow-hidden bg-linear-to-br from-primary-dark via-secondary-dark to-primary ${wrapperClassName}`}
+    >
       <div className="absolute inset-0">
         <FloatingLines
           enabledWaves={["top", "bottom", "middle"]}
@@ -62,7 +68,9 @@ const Hero = ({
       </div>
 
       <div className="relative">
-        <div className={`text-white flex flex-col items-center justify-center gap-4 px-4 pt-24 pb-10 text-center sm:gap-5 sm:px-6 sm:pt-28 lg:px-8 ${innerClassName}`}>
+        <div
+          className={`text-white flex flex-col items-center justify-center gap-4 px-4 pt-24 pb-10 text-center sm:gap-5 sm:px-6 sm:pt-28 lg:px-8 ${innerClassName}`}
+        >
           <Button className="group uppercase flex items-center justify-center gap-2 rounded-full border md:p-5 border-white/30 bg-white/10 dark:bg-black/10 text-xs font-medium text-primary-foreground backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.25)] transition-all duration-300 hover:bg-white/15 hover:border-white/45 px-5 py-2.5 sm:text-sm">
             <span className="inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-secondary dark:text-indigo-600" />
             <span>{tag}</span>
@@ -84,10 +92,12 @@ const Hero = ({
 
           {buttons.length > 0 && (
             <div className="flex w-full flex-col items-center gap-3 px-4 sm:w-auto sm:flex-row sm:gap-5 sm:px-0">
-              {buttons.map(({ label, icon, className }) => (
-                <Button key={label} className={className}>
-                  {label} {icon}
-                </Button>
+              {buttons.map(({ label, icon, className, href }) => (
+                <Link key={label} href={href}>
+                  <Button className={className}>
+                    {label} {icon}
+                  </Button>
+                </Link>
               ))}
             </div>
           )}
