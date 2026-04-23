@@ -30,7 +30,12 @@ const candidates: Candidate[] = [
     name: "Sara Mahmoud",
     position: "Product Designer",
     status: "Interview",
-    scores: { technical: 82, communication: 91, problemSolving: 78, cultureFit: 95 },
+    scores: {
+      technical: 82,
+      communication: 91,
+      problemSolving: 78,
+      cultureFit: 95,
+    },
     highlight: "Top Pick",
   },
   {
@@ -40,7 +45,12 @@ const candidates: Candidate[] = [
     name: "Dina Nasser",
     position: "Project Manager",
     status: "Interview",
-    scores: { technical: 70, communication: 88, problemSolving: 80, cultureFit: 86 },
+    scores: {
+      technical: 70,
+      communication: 88,
+      problemSolving: 80,
+      cultureFit: 86,
+    },
   },
   {
     id: 3,
@@ -49,7 +59,12 @@ const candidates: Candidate[] = [
     name: "Ahmed Hassan",
     position: "Senior Engineer",
     status: "Reviewed",
-    scores: { technical: 93, communication: 77, problemSolving: 89, cultureFit: 84 },
+    scores: {
+      technical: 93,
+      communication: 77,
+      problemSolving: 89,
+      cultureFit: 84,
+    },
   },
   {
     id: 4,
@@ -58,7 +73,12 @@ const candidates: Candidate[] = [
     name: "Omar Magdy",
     position: "Data Analyst",
     status: "Shortlisted",
-    scores: { technical: 85, communication: 79, problemSolving: 82, cultureFit: 90 },
+    scores: {
+      technical: 85,
+      communication: 79,
+      problemSolving: 82,
+      cultureFit: 90,
+    },
   },
   {
     id: 5,
@@ -67,7 +87,12 @@ const candidates: Candidate[] = [
     name: "Lina Adel",
     position: "UX Researcher",
     status: "Interview",
-    scores: { technical: 74, communication: 94, problemSolving: 76, cultureFit: 92 },
+    scores: {
+      technical: 74,
+      communication: 94,
+      problemSolving: 76,
+      cultureFit: 92,
+    },
   },
   {
     id: 6,
@@ -76,7 +101,12 @@ const candidates: Candidate[] = [
     name: "Karim Saleh",
     position: "Business Analyst",
     status: "Reviewed",
-    scores: { technical: 79, communication: 81, problemSolving: 87, cultureFit: 83 },
+    scores: {
+      technical: 79,
+      communication: 81,
+      problemSolving: 87,
+      cultureFit: 83,
+    },
   },
   {
     id: 7,
@@ -85,7 +115,12 @@ const candidates: Candidate[] = [
     name: "Nadia Farouk",
     position: "QA Engineer",
     status: "Shortlisted",
-    scores: { technical: 88, communication: 84, problemSolving: 81, cultureFit: 86 },
+    scores: {
+      technical: 88,
+      communication: 84,
+      problemSolving: 81,
+      cultureFit: 86,
+    },
   },
   {
     id: 8,
@@ -94,7 +129,12 @@ const candidates: Candidate[] = [
     name: "Rami Mansour",
     position: "DevOps Engineer",
     status: "Reviewed",
-    scores: { technical: 91, communication: 75, problemSolving: 90, cultureFit: 80 },
+    scores: {
+      technical: 91,
+      communication: 75,
+      problemSolving: 90,
+      cultureFit: 80,
+    },
   },
   {
     id: 9,
@@ -103,24 +143,40 @@ const candidates: Candidate[] = [
     name: "Hana Zaki",
     position: "Project Coordinator",
     status: "Interview",
-    scores: { technical: 72, communication: 89, problemSolving: 77, cultureFit: 93 },
+    scores: {
+      technical: 72,
+      communication: 89,
+      problemSolving: 77,
+      cultureFit: 93,
+    },
   },
 ];
 
-const statusStyle: Record<CandidateStatus, { bg: string; dot: string; text: string }> = {
+const statusStyle: Record<
+  CandidateStatus,
+  { bg: string; dot: string; text: string }
+> = {
   Interview: { bg: "#f0ebf8", dot: "#6b3fa0", text: "#6b3fa0" },
   Reviewed: { bg: "#eaf2ff", dot: "#1553c7", text: "#1553c7" },
   Shortlisted: { bg: "#e8f8ef", dot: "#1a7f4e", text: "#1a7f4e" },
 };
 
-function ScoreRow({ label, value }: Readonly<{ label: string; value: number }>) {
+function ScoreRow({
+  label,
+  value,
+}: Readonly<{ label: string; value: number }>) {
   return (
     <div className="flex items-center gap-2">
       <span className="w-20 text-[11.5px] text-[#8ba8c4]">{label}</span>
       <div className="h-1 flex-1 overflow-hidden rounded bg-[#dde8f4]">
-        <div className="h-full rounded bg-[#0c409f]" style={{ width: `${value}%` }} />
+        <div
+          className="h-full rounded bg-[#0c409f]"
+          style={{ width: `${value}%` }}
+        />
       </div>
-      <span className="w-8 text-right text-[11.5px] font-semibold text-[#0d1117]">{value}%</span>
+      <span className="w-8 text-right text-[11.5px] font-semibold text-[#0d1117]">
+        {value}%
+      </span>
     </div>
   );
 }
@@ -137,14 +193,14 @@ function CandidateCard({ candidate }: Readonly<{ candidate: Candidate }>) {
 
   return (
     <article
-      className="relative rounded-[14px] border border-[#aac8e3] p-[18px]"
+      className="relative rounded-[14px] border border-[#aac8e3] p-4.5"
       style={{
         backgroundImage: "linear-gradient(160deg, #ffffff 70%, #d8ecf8 100%)",
       }}
     >
       <div className="mb-3 flex items-start gap-3">
         <div
-          className="flex h-[42px] w-[42px] items-center justify-center rounded-xl text-sm font-bold text-white"
+          className="flex h-10.5 w-10.5 items-center justify-center rounded-xl text-sm font-bold text-white"
           style={{ backgroundColor: candidate.avatarColor }}
         >
           {candidate.initials}
@@ -156,21 +212,32 @@ function CandidateCard({ candidate }: Readonly<{ candidate: Candidate }>) {
             className="inline-flex w-fit items-center gap-1 rounded-full px-2.5 py-0.5 text-[11.5px] font-semibold"
             style={{ backgroundColor: style.bg, color: style.text }}
           >
-            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: style.dot }} />
+            <span
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ backgroundColor: style.dot }}
+            />
             {candidate.status}
           </span>
         </div>
       </div>
 
-      <div className="space-y-[7px]">
+      <div className="space-y-1.75">
         <ScoreRow label="Technical" value={candidate.scores.technical} />
-        <ScoreRow label="Communication" value={candidate.scores.communication} />
-        <ScoreRow label="Problem Solving" value={candidate.scores.problemSolving} />
+        <ScoreRow
+          label="Communication"
+          value={candidate.scores.communication}
+        />
+        <ScoreRow
+          label="Problem Solving"
+          value={candidate.scores.problemSolving}
+        />
         <ScoreRow label="Culture Fit" value={candidate.scores.cultureFit} />
       </div>
 
       <div className="mt-4 flex items-center justify-between border-t border-[#dde8f4] pt-3.5">
-        <span className="text-[13px] font-extrabold text-[#0c409f]">{avg}% avg</span>
+        <span className="text-[13px] font-extrabold text-[#0c409f]">
+          {avg}% avg
+        </span>
         <button
           type="button"
           className="rounded-[7px] border border-[#dde8f4] px-3.5 py-1.5 text-xs font-semibold text-[#4a5568] hover:bg-white"
@@ -182,7 +249,10 @@ function CandidateCard({ candidate }: Readonly<{ candidate: Candidate }>) {
       {candidate.highlight && (
         <div
           className="absolute right-4 top-3 rounded-full px-2 py-1 text-[9.5px] font-extrabold uppercase tracking-[0.38px] text-white"
-          style={{ backgroundImage: "linear-gradient(135deg, #f59e0b 0%, #f97316 100%)" }}
+          style={{
+            backgroundImage:
+              "linear-gradient(135deg, #f59e0b 0%, #f97316 100%)",
+          }}
         >
           ⭐ {candidate.highlight}
         </div>
@@ -194,7 +264,10 @@ function CandidateCard({ candidate }: Readonly<{ candidate: Candidate }>) {
 export default function CandidatesPage() {
   const [positionFilter, setPositionFilter] = useState("All Positions");
   const allPositions = useMemo(
-    () => ["All Positions", ...new Set(candidates.map((candidate) => candidate.position))],
+    () => [
+      "All Positions",
+      ...new Set(candidates.map((candidate) => candidate.position)),
+    ],
     [],
   );
 
@@ -202,7 +275,9 @@ export default function CandidatesPage() {
     () =>
       positionFilter === "All Positions"
         ? candidates
-        : candidates.filter((candidate) => candidate.position === positionFilter),
+        : candidates.filter(
+            (candidate) => candidate.position === positionFilter,
+          ),
     [positionFilter],
   );
 
@@ -213,8 +288,12 @@ export default function CandidatesPage() {
       <main className="flex flex-1 flex-col gap-6 p-4 sm:p-6 lg:p-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-[15.5px] font-bold text-[#0d1117]">Top Candidates</h2>
-            <p className="text-[12.5px] text-[#8ba8c4]">Scored and ranked across all positions</p>
+            <h2 className="text-[15.5px] font-bold text-[#0d1117]">
+              Top Candidates
+            </h2>
+            <p className="text-[12.5px] text-[#8ba8c4]">
+              Scored and ranked across all positions
+            </p>
           </div>
 
           <div className="relative w-full sm:w-auto">

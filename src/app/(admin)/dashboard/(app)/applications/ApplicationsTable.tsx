@@ -325,25 +325,33 @@ export function ApplicationsTable({ applications }: { applications: AdminApplica
 
         {/* Table */}
         <div className="overflow-x-auto">
-          <table className="min-w-[900px] w-full text-sm">
+          <table className="min-w-225 w-full text-sm">
             <thead>
               <tr className="border-b border-[rgba(0,0,0,0.06)] bg-[#f9fafb]">
-                {["Applicant", "Position", "Work Type", "Status", "Applied", "Actions"].map(
-                  (col) => (
-                    <th
-                      key={col}
-                      className="px-6 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[#9ca3af]"
-                    >
-                      {col}
-                    </th>
-                  ),
-                )}
+                {[
+                  "Applicant",
+                  "Position",
+                  "Work Type",
+                  "Status",
+                  "Applied",
+                  "Actions",
+                ].map((col) => (
+                  <th
+                    key={col}
+                    className="px-6 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[#9ca3af]"
+                  >
+                    {col}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-sm text-[#9ca3af]">
+                  <td
+                    colSpan={6}
+                    className="px-6 py-12 text-center text-sm text-[#9ca3af]"
+                  >
                     No applications match your filters.
                   </td>
                 </tr>
