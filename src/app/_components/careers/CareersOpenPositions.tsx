@@ -66,7 +66,7 @@ export default function CareersOpenPositions({
                       type="button"
                       aria-current={isActive ? "true" : undefined}
                       onClick={() => handleDepartmentClick(department, index)}
-                      className={`rounded-full px-5 py-2.5 text-sm font-medium leading-5 whitespace-nowrap transition-colors ${
+                      className={`rounded-full px-5 py-2.5 text-sm font-medium leading-5 whitespace-nowrap line-clamp-1 text-ellipsis transition-colors ${
                         isActive
                           ? "bg-[#0C409F] text-white shadow-[0px_4px_6px_-1px_rgba(12,64,159,0.2),0px_2px_4px_-2px_rgba(12,64,159,0.2)]"
                           : "border border-[#E5E7EB] bg-white text-[#6B7DB3]"

@@ -101,7 +101,7 @@ const Page = () => {
         fallback={
           <FadeInSection>
             <div className="container mx-auto flex flex-col items-center justify-center gap-2 py-20 text-center text-muted-foreground">
-              <Spinner className="size-12 " />
+              <Spinner className="size-12 text-primary/50" />
             </div>
           </FadeInSection>
         }

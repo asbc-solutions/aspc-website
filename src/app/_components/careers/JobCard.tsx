@@ -22,9 +22,9 @@ const JobCard = ({
   return (
     <div className="border border-gray-200 dark:border-slate-700 rounded-lg p-6 hover:shadow-lg transition-shadow duration-300 flex flex-col gap-4 bg-white dark:bg-slate-800">
       {/* Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 overflow-clip text-ellipsis">
         <div className="flex items-center gap-3 flex-1">
-          <h3 className="text-lg md:text-xl font-bold dark:text-white">
+          <h3 className="text-lg md:text-xl font-bold dark:text-white line-clamp-1 text-ellipsis max-w-xl">
             {title}
           </h3>
           <span className="px-2 py-0.5 text-sm bg-secondary dark:bg-blue-900 text-primary dark:text-blue-200 rounded-full w-fit">

@@ -12,7 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { useForm, type Resolver } from "react-hook-form";
+import { useForm, useWatch, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
@@ -42,12 +42,12 @@ const STATUS_OPTIONS = [
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
 const positionSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  department: z.string().min(1, "Department is required"),
+  title: z.string().min(1, "Title is required").max(50, "Title must be 50 characters or fewer"),
+  department: z.string().min(1, "Department is required").max(50, "Department must be 50 characters or fewer"),
   work_type: z.coerce.number().int().min(1),
   employment_type: z.coerce.number().int().min(1),
-  experience: z.string().min(1, "Experience is required"),
-  description: z.string().min(1, "Description is required"),
+  experience: z.string().min(1, "Experience is required").max(50, "Experience must be 50 characters or fewer"),
+  description: z.string().min(1, "Description is required").max(250, "Description must be 250 characters or fewer"),
   status: z.coerce.number().int().min(1),
 });
 
@@ -258,6 +258,7 @@ function PositionModal({
     handleSubmit,
     reset,
     setError,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<PositionFormValues>({
     resolver: zodResolver(positionSchema) as Resolver<PositionFormValues>,
@@ -271,6 +272,8 @@ function PositionModal({
       status: 1,
     },
   });
+
+  const descriptionValue = useWatch({ control, name: "description" });
 
   useEffect(() => {
     if (!open) return;
@@ -366,6 +369,7 @@ function PositionModal({
                 {...register("title")}
                 className={inputClass}
                 placeholder="Senior Software Engineer"
+                maxLength={50}
               />
             </Field>
 
@@ -374,6 +378,7 @@ function PositionModal({
                 {...register("department")}
                 className={inputClass}
                 placeholder="Engineering"
+                maxLength={50}
               />
             </Field>
 
@@ -402,6 +407,7 @@ function PositionModal({
                 {...register("experience")}
                 className={inputClass}
                 placeholder="3-5 years"
+                maxLength={50}
               />
             </Field>
 
@@ -424,7 +430,11 @@ function PositionModal({
                 {...register("description")}
                 className={`min-h-24 ${inputClass}`}
                 placeholder="Write a brief role description..."
+                maxLength={250}
               />
+              <span className="self-end text-xs text-[#9ca3af]">
+                {descriptionValue.length}/250
+              </span>
             </Field>
           </div>
 
@@ -478,7 +488,7 @@ function PositionCard({
   return (
     <div className="flex flex-col gap-4 rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-5 shadow-sm transition-shadow hover:shadow-md">
       <div className="flex items-center justify-between">
-        <span className="rounded-full bg-[#eef2ff] px-3 py-1 text-xs font-semibold text-[#1e3fb0]">
+        <span className="rounded-full bg-[#eef2ff] px-3 py-1 text-xs font-semibold text-[#1e3fb0] max-w-xl line-clamp-1 text-ellipsis">
           {position.department}
         </span>
         <div className="flex items-center gap-3 text-[#9ca3af]">
@@ -502,7 +512,9 @@ function PositionCard({
       </div>
 
       <div>
-        <h3 className="text-base font-bold text-[#0d1240]">{position.title}</h3>
+        <h3 className="text-base font-bold text-[#0d1240] max-w-xl line-clamp-1 text-ellipsis">
+          {position.title}
+        </h3>
         <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[#6b7280]">
           <span className="flex items-center gap-1">
             <MapPin size={11} />
