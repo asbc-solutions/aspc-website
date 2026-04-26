@@ -2,6 +2,7 @@
 
 import { Bell } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import dayjs from "dayjs";
 
 type AdminPageHeaderProps = {
   title: string;
@@ -11,7 +12,7 @@ type AdminPageHeaderProps = {
 
 export function AdminPageHeader({
   title,
-  subtitle = "Monday, 8 April 2026",
+  subtitle = dayjs().format("dddd, D MMMM YYYY"),
   rightSlot,
 }: Readonly<AdminPageHeaderProps>) {
   return (
