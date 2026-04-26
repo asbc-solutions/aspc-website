@@ -5,6 +5,7 @@ import {
   Briefcase,
   Calendar,
   ChevronDown,
+  Eye,
   MapPin,
   Pencil,
   Plus,
@@ -485,14 +486,150 @@ function PositionModal({
   );
 }
 
+// ─── Position view modal ──────────────────────────────────────────────────────
+
+function PositionViewModal({
+  position,
+  onClose,
+}: Readonly<{
+  position: Position | null;
+  onClose: () => void;
+}>) {
+  if (!position) return null;
+
+  const stat = statusStyles[position.status];
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-lg rounded-2xl bg-white shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between border-b border-[rgba(0,0,0,0.08)] px-6 py-4">
+          <h3 className="text-lg font-semibold text-[#0d1240]">
+            Position Details
+          </h3>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-md p-1.5 text-[#6b7280] hover:bg-[#f3f4f6]"
+            aria-label="Close"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-5 px-6 py-5">
+          <div>
+            <p className="mb-1 text-xs font-medium text-[#9ca3af] uppercase tracking-wide">
+              Title
+            </p>
+            <p className="text-base font-bold text-[#0d1240] break-words">
+              {position.title}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="mb-1 text-xs font-medium text-[#9ca3af] uppercase tracking-wide">
+                Department
+              </p>
+              <span className="inline-block rounded-full bg-[#eef2ff] px-3 py-1 text-xs font-semibold text-[#1e3fb0]">
+                {position.department}
+              </span>
+            </div>
+
+            <div>
+              <p className="mb-1 text-xs font-medium text-[#9ca3af] uppercase tracking-wide">
+                Status
+              </p>
+              <span
+                className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                style={{ backgroundColor: stat.bg, color: stat.text }}
+              >
+                <span
+                  className="h-1.5 w-1.5 rounded-full"
+                  style={{ backgroundColor: stat.dot }}
+                />
+                {position.status}
+              </span>
+            </div>
+
+            <div>
+              <p className="mb-1 text-xs font-medium text-[#9ca3af] uppercase tracking-wide">
+                Work Type
+              </p>
+              <span className="flex items-center gap-1.5 text-sm text-[#374151]">
+                <MapPin size={13} className="text-[#6b7280]" />
+                {position.workType}
+              </span>
+            </div>
+
+            <div>
+              <p className="mb-1 text-xs font-medium text-[#9ca3af] uppercase tracking-wide">
+                Employment Type
+              </p>
+              <span className="flex items-center gap-1.5 text-sm text-[#374151]">
+                <Calendar size={13} className="text-[#6b7280]" />
+                {position.employmentType}
+              </span>
+            </div>
+
+            <div>
+              <p className="mb-1 text-xs font-medium text-[#9ca3af] uppercase tracking-wide">
+                Experience
+              </p>
+              <span className="flex items-center gap-1.5 text-sm text-[#374151]">
+                <Award size={13} className="text-[#6b7280]" />
+                {position.level}
+              </span>
+            </div>
+
+            <div>
+              <p className="mb-1 text-xs font-medium text-[#9ca3af] uppercase tracking-wide">
+                Posted
+              </p>
+              <p className="text-sm text-[#374151]">{position.postedDate}</p>
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-1 text-xs font-medium text-[#9ca3af] uppercase tracking-wide">
+              Description
+            </p>
+            <p className="whitespace-pre-wrap break-words text-sm text-[#374151] leading-relaxed">
+              {position.description || "No description provided."}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex justify-end border-t border-[rgba(0,0,0,0.08)] px-6 py-4">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg border border-[rgba(0,0,0,0.12)] px-4 py-2 text-sm font-semibold text-[#374151] hover:bg-[#f3f4f6]"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Position card ────────────────────────────────────────────────────────────
 
 function PositionCard({
   position,
+  onView,
   onEdit,
   onDelete,
 }: Readonly<{
   position: Position;
+  onView: (p: Position) => void;
   onEdit: (p: Position) => void;
   onDelete: (p: Position) => void;
 }>) {
@@ -509,6 +646,14 @@ function PositionCard({
           {position.department}
         </span>
         <div className="flex items-center gap-3 text-[#9ca3af]">
+          <button
+            type="button"
+            className="hover:text-[#1e3fb0]"
+            aria-label="View position"
+            onClick={() => onView(position)}
+          >
+            <Eye size={15} />
+          </button>
           <button
             type="button"
             className="hover:text-[#6b7280]"
@@ -587,6 +732,8 @@ export default function PositionsPage() {
   const [positions, setPositions] = useState<Position[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [viewPosition, setViewPosition] = useState<Position | null>(null);
 
   const [modalPosition, setModalPosition] = useState<Position | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -702,6 +849,7 @@ export default function PositionsPage() {
           <PositionCard
             key={p.id}
             position={p}
+            onView={(pos) => setViewPosition(pos)}
             onEdit={(pos) => {
               setModalPosition(pos);
               setIsModalOpen(true);
@@ -812,6 +960,11 @@ export default function PositionsPage() {
           {positionsContent}
         </main>
       </div>
+
+      <PositionViewModal
+        position={viewPosition}
+        onClose={() => setViewPosition(null)}
+      />
 
       <PositionModal
         open={isModalOpen}
