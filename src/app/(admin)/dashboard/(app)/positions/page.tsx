@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Award,
   Briefcase,
   Calendar,
   ChevronDown,
@@ -23,15 +24,15 @@ import { Spinner } from "@/components/ui/spinner";
 
 const WORK_TYPE_OPTIONS = [
   { label: "On-site", value: 1 },
-  { label: "Hybrid", value: 2 },
-  { label: "Remote", value: 3 },
+  { label: "Remote", value: 2 },
+  { label: "Hybrid", value: 3 },
 ];
 
 const EMPLOYMENT_TYPE_OPTIONS = [
   { label: "Full-time", value: 1 },
   { label: "Part-time", value: 2 },
-  { label: "Contract", value: 3 },
-  { label: "Internship", value: 4 },
+  { label: "Internship", value: 3 },
+  { label: "Freelance", value: 4 },
 ];
 
 const STATUS_OPTIONS = [
@@ -42,12 +43,24 @@ const STATUS_OPTIONS = [
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
 const positionSchema = z.object({
-  title: z.string().min(1, "Title is required").max(50, "Title must be 50 characters or fewer"),
-  department: z.string().min(1, "Department is required").max(50, "Department must be 50 characters or fewer"),
+  title: z
+    .string()
+    .min(1, "Title is required")
+    .max(50, "Title must be 50 characters or fewer"),
+  department: z
+    .string()
+    .min(1, "Department is required")
+    .max(50, "Department must be 50 characters or fewer"),
   work_type: z.coerce.number().int().min(1),
   employment_type: z.coerce.number().int().min(1),
-  experience: z.string().min(1, "Experience is required").max(50, "Experience must be 50 characters or fewer"),
-  description: z.string().min(1, "Description is required").max(250, "Description must be 250 characters or fewer"),
+  experience: z
+    .string()
+    .min(1, "Experience is required")
+    .max(50, "Experience must be 50 characters or fewer"),
+  description: z
+    .string()
+    .min(1, "Description is required")
+    .max(250, "Description must be 250 characters or fewer"),
   status: z.coerce.number().int().min(1),
 });
 
@@ -65,8 +78,9 @@ type Position = {
   location: string;
   workType: string;
   workTypeId: number;
-  level: string;
+  employmentType: string;
   employmentTypeId: number;
+  level: string;
   applicants: number;
   maxApplicants: number;
   status: PositionStatus;
@@ -123,27 +137,28 @@ const normalizePosition = (raw: unknown): Position | null => {
     "Not set",
   );
   const workTypeId =
-    workTypeObj && typeof workTypeObj.id === "number" ? workTypeObj.id : 0;
+    WORK_TYPE_OPTIONS.find(
+      (o) => o.label.toLowerCase() === workTypeLabel.toLowerCase(),
+    )?.value ?? 0;
 
   const employmentTypeLabel = textOr(
     employmentTypeObj ? employmentTypeObj.label : raw.employment_type,
     "Not set",
   );
   const employmentTypeId =
-    employmentTypeObj && typeof employmentTypeObj.id === "number"
-      ? employmentTypeObj.id
-      : 0;
+    EMPLOYMENT_TYPE_OPTIONS.find(
+      (o) => o.label.toLowerCase() === employmentTypeLabel.toLowerCase(),
+    )?.value ?? 0;
 
-  const statusLabel = textOr(
-    statusObj ? statusObj.label : raw.status,
-    "active",
-  );
-  const statusId =
-    statusObj && typeof statusObj.id === "number"
-      ? statusObj.id
-      : statusLabel.toLowerCase() === "paused"
-        ? 2
-        : 1;
+  const statusLabel = statusObj
+    ? textOr(statusObj.label, "active")
+    : typeof raw.status === "number"
+      ? STATUS_OPTIONS.find((o) => o.value === raw.status)?.label
+      : textOr(raw.status, "active");
+
+  const statusId = STATUS_OPTIONS.find(
+    (o) => o.label.toLowerCase() === statusLabel?.toLowerCase(),
+  )?.value;
   const status = toStatus(statusLabel);
 
   let applicants = 0;
@@ -159,13 +174,14 @@ const normalizePosition = (raw: unknown): Position | null => {
     location: textOr(raw.location, "Not specified"),
     workType: workTypeLabel,
     workTypeId,
-    level: textOr(raw.experience, textOr(employmentTypeLabel, "Not set")),
+    employmentType: employmentTypeLabel,
     employmentTypeId,
+    level: textOr(raw.experience, "Not set"),
     applicants,
     maxApplicants:
       typeof raw.max_applicants === "number" ? raw.max_applicants : 100,
     status,
-    statusId,
+    statusId: statusId! ,
     postedDate: toDateLabel(raw.created_at),
   };
 };
@@ -285,7 +301,8 @@ function PositionModal({
           employment_type: position.employmentTypeId || 1,
           experience: position.level,
           description: position.description,
-          status: position.statusId || 1,
+          status:
+            STATUS_OPTIONS.find((o) => o.label === position.status)?.value ?? 1,
         }
       : {
           title: "",
@@ -518,14 +535,15 @@ function PositionCard({
         <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[#6b7280]">
           <span className="flex items-center gap-1">
             <MapPin size={11} />
-            {position.location}
-          </span>
-          <span className="flex items-center gap-1">
-            <Calendar size={11} />
             {position.workType}
           </span>
+
           <span className="flex items-center gap-1">
-            <Briefcase size={11} />
+            <Calendar size={11} />
+            {position.employmentType}
+          </span>
+          <span className="flex items-center gap-1">
+            <Award size={11} />
             {position.level}
           </span>
         </div>
